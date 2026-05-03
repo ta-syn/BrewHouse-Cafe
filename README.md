@@ -1,85 +1,84 @@
-# ☕ BrewHouse: Cafe Management System
+# ☕ BrewHouse Cafe - Premium Management System
 
-A production-grade, enterprise-ready **Cafe Management System** built with **ASP.NET Core 8 MVC**. This project is designed for efficiency, security, and a premium user experience, demonstrating advanced Object-Oriented Programming (OOP) principles and modern software architecture.
+[![Build Status](https://img.shields.io/badge/Build-Success-brightgreen?style=for-the-badge&logo=dotnet)](https://github.com/ta-syn/BrewHouse-Cafe-)
+[![Platform](https://img.shields.io/badge/Platform-.NET%208%20MVC-512bd4?style=for-the-badge&logo=dotnet)](https://github.com/ta-syn/BrewHouse-Cafe-)
+[![Database](https://img.shields.io/badge/Database-SQL%20Server-red?style=for-the-badge&logo=microsoft-sql-server)](https://github.com/ta-syn/BrewHouse-Cafe-)
+[![Frontend](https://img.shields.io/badge/Design-Glassmorphism%20%7C%20Premium-gold?style=for-the-badge&logo=css3)](https://github.com/ta-syn/BrewHouse-Cafe-)
 
----
-
-## 🚀 Technologies Used
-- **Backend:** ASP.NET Core 8 MVC (C#)
-- **Database:** PostgreSQL (with Entity Framework Core)
-- **Security:** BCrypt.Net-Next (Industry-standard password hashing)
-- **UI/UX:** Bootstrap 5, Font Awesome 6, Google Fonts (Playfair Display & Lato)
-- **Design Pattern:** Repository-Service Pattern & MVC
-- **Deployment:** Optimized for Render.com
+Welcome to **BrewHouse Cafe**, an enterprise-grade Cafe Management System designed for modern cafes. Built with **ASP.NET Core 8 MVC**, this platform offers a seamless experience for customers, staff, and administrators with a focus on real-time operational efficiency and stunning aesthetics.
 
 ---
 
-## ✨ Key Features
+## 🌟 Key Features
 
-### 👑 Admin Dashboard
-- **Menu Management:** Full CRUD operations for Beverages, Food, and Desserts using TPH inheritance.
-- **Staff Control:** Manage staff accounts and permissions.
-- **Analytics:** Real-time metrics for total revenue, today's sales, and popular items.
-- **Table Management:** Track and manage cafe table occupancy.
+### 📊 Advanced Dashboards
+- **Dual-Metric Analytics:** Track "Today's vs. Total" orders and revenue at a glance.
+- **High-Density Statistics:** Split-card design for efficient data visualization.
+- **BST Synchronization:** All time-stamps are perfectly synced with **Bangladesh Standard Time (UTC+6)**.
 
-### 🍳 Staff Portal
-- **Kitchen Kanban Board:** Real-time order status management (Pending, Preparing, Ready).
-- **Walk-in POS:** POS system for walk-in customers with AJAX-powered calculations.
-- **Table Overview:** Quick view of available and occupied tables.
+### 🛒 Modern Customer Experience
+- **Real-time Cart:** AJAX-powered "Add to Cart" with live badge updates and zero page refreshes.
+- **Glassmorphic UI:** A visually stunning, modern search interface and menu layout.
+- **Instant Feedback:** Integrated **SweetAlert2** for premium notifications and alerts.
 
-### 🛒 Customer Experience
-- **Interactive Menu:** Searchable menu with category filtering and dynamic search.
-- **Shopping Cart:** Session-based cart with JSON serialization.
-- **Discount System:** Coupon code validation with expiry and percentage logic.
-- **Order Tracking:** Live progress bar for tracking order status from kitchen to table.
+### 🔐 Security & Access
+- **Flexible Login:** Authenticate using either **Email or Name** for maximum convenience.
+- **RBAC (Role-Based Access Control):** Dedicated portals for Admins, Staff, and Customers.
+- **Secure Auth:** Industry-standard password hashing using **BCrypt**.
 
 ---
 
-## 🧩 OOP Concepts Applied
-This project serves as a comprehensive demonstration of core **Object-Oriented Programming** principles:
-- **Inheritance:** Concrete classes (`Beverage`, `Food`, `Dessert`) inheriting from the abstract `MenuItem`.
-- **Polymorphism:** Method overriding and interface implementation for specialized behaviors.
-- **Encapsulation:** Protecting data integrity via private fields and validated public properties.
-- **Abstraction:** Using abstract classes and interfaces (`IOrderable`, `IDiscountable`) to define strict system contracts.
-- **Exception Handling:** Custom exception hierarchy for robust error management.
+## 🛠️ Tech Stack
+
+- **Backend:** C# | .NET 8 MVC
+- **Database:** Entity Framework Core | SQL Server
+- **Frontend:** Vanilla CSS (Premium Themes) | Bootstrap 5.3 | jQuery
+- **Notifications:** SweetAlert2 | Animate.css
+- **Patterns:** Dependency Injection | Repository Pattern | Custom Exception Filters
 
 ---
 
-## 🛠️ Local Setup Instructions
+## 🚀 Getting Started
 
-1. **Clone the Project**
-2. **Database Configuration:**
-   Update your connection string in `appsettings.json`:
-   ```json
-   "ConnectionStrings": {
-     "DefaultConnection": "Host=localhost;Database=CafeDb;Username=postgres;Password=yourpassword"
-   }
+### Prerequisites
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
+
+### Installation
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ta-syn/BrewHouse-Cafe-.git
    ```
-3. **Run Migrations:**
+
+2. **Update Database:**
+   Ensure your connection string is correct in `appsettings.json`, then run:
    ```bash
    dotnet ef database update
    ```
-4. **Launch the App:**
+
+3. **Run the Application:**
    ```bash
    dotnet run
    ```
+   The app will be available at `http://localhost:5100`.
 
 ---
 
-## 🔐 Credentials (Test Accounts)
-
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **Admin** | `admin@cafe.com` | `admin123` |
-| **Staff** | `staff@cafe.com` | `staff123` |
+## 📸 Design Philosophy
+The system utilizes a **Premium Dark/Coffee Theme** with glassmorphism elements, ensuring a high-end feel that matches the quality of a boutique cafe. Every micro-interaction is polished to provide a smooth user journey.
 
 ---
 
-## ☁️ Deployment (Render.com)
-The project is configured for seamless deployment on Render:
-- **Build Command:** `dotnet publish -c Release -o out`
-- **Start Command:** `dotnet out/CafeManagement.dll`
-- **Database:** Set your `DATABASE_URL` environment variable to your PostgreSQL connection string.
+## 🤝 Contribution
+Contributions are welcome! Feel free to open a Pull Request or report an issue.
 
 ---
-*Developed with a focus on code quality, security, and performance.* ☕🔥
+
+## 📄 License
+Designed and Developed with ❤️ by **BrewHouse Team**.
+
+> [!TIP]
+> This system is fully optimized for **Bangladesh Standard Time**. No more timezone bugs!
+
+---
+© 2026 BrewHouse Cafe Management. All rights reserved.
