@@ -1,13 +1,20 @@
-# ☕ BrewHouse Cafe - Premium Management System
+<p align="center">
+  <img src="wwwroot/images/github/banner.png" alt="BrewHouse Cafe Banner" width="100%">
+</p>
 
-[![Build Status](https://img.shields.io/badge/Build-Success-brightgreen?style=for-the-badge&logo=dotnet)](https://github.com/ta-syn/BrewHouse-Cafe-)
-[![Platform](https://img.shields.io/badge/Platform-.NET%208%20MVC-512bd4?style=for-the-badge&logo=dotnet)](https://github.com/ta-syn/BrewHouse-Cafe-)
-[![Database](https://img.shields.io/badge/Database-SQL%20Server-red?style=for-the-badge&logo=microsoft-sql-server)](https://github.com/ta-syn/BrewHouse-Cafe-)
-[![Frontend](https://img.shields.io/badge/Design-Glassmorphism%20%7C%20Premium-gold?style=for-the-badge&logo=css3)](https://github.com/ta-syn/BrewHouse-Cafe-)
+<h1 align="center">☕ BrewHouse Cafe</h1>
+<p align="center"><b>Premium Management System for Modern Cafes</b></p>
 
-Welcome to **BrewHouse Cafe**, an enterprise-grade Cafe Management System designed for modern cafes. Built with **ASP.NET Core 8 MVC**, this platform offers a seamless experience for customers, staff, and administrators with a focus on real-time operational efficiency and stunning aesthetics.
+<p align="center">
+  <img src="https://img.shields.io/badge/Build-Success-brightgreen?style=flat-square&logo=dotnet" alt="Build Status">
+  <img src="https://img.shields.io/badge/Platform-.NET%208%20MVC-512bd4?style=flat-square&logo=dotnet" alt="Platform">
+  <img src="https://img.shields.io/badge/Database-SQL%20Server-red?style=flat-square&logo=microsoft-sql-server" alt="Database">
+  <img src="https://img.shields.io/badge/Design-Premium-gold?style=flat-square&logo=css3" alt="Design">
+</p>
 
 ---
+
+Welcome to **BrewHouse Cafe**, an enterprise-grade Cafe Management System designed for modern cafes. Built with **ASP.NET Core 8 MVC**, this platform offers a seamless experience for customers, staff, and administrators with a focus on real-time operational efficiency and stunning aesthetics.
 
 ## 🌟 Key Features
 
@@ -26,17 +33,12 @@ Welcome to **BrewHouse Cafe**, an enterprise-grade Cafe Management System design
 - **RBAC (Role-Based Access Control):** Dedicated portals for Admins, Staff, and Customers.
 - **Secure Auth:** Industry-standard password hashing using **BCrypt**.
 
----
-
 ## 🛠️ Tech Stack
 
 - **Backend:** C# | .NET 8 MVC
 - **Database:** Entity Framework Core | SQL Server
 - **Frontend:** Vanilla CSS (Premium Themes) | Bootstrap 5.3 | jQuery
 - **Notifications:** SweetAlert2 | Animate.css
-- **Patterns:** Dependency Injection | Repository Pattern | Custom Exception Filters
-
----
 
 ## 🚀 Getting Started
 
@@ -49,36 +51,15 @@ Welcome to **BrewHouse Cafe**, an enterprise-grade Cafe Management System design
    ```bash
    git clone https://github.com/ta-syn/BrewHouse-Cafe-.git
    ```
-
 2. **Update Database:**
-   Ensure your connection string is correct in `appsettings.json`, then run:
    ```bash
    dotnet ef database update
    ```
-
 3. **Run the Application:**
    ```bash
    dotnet run
    ```
    The app will be available at `http://localhost:5100`.
-
----
-
-## 📸 Design Philosophy
-The system utilizes a **Premium Dark/Coffee Theme** with glassmorphism elements, ensuring a high-end feel that matches the quality of a boutique cafe. Every micro-interaction is polished to provide a smooth user journey.
-
----
-
-## 🤝 Contribution
-Contributions are welcome! Feel free to open a Pull Request or report an issue.
-
----
-
-## 📄 License
-Designed and Developed with ❤️ by **BrewHouse Team**.
-
-> [!TIP]
-> This system is fully optimized for **Bangladesh Standard Time**. No more timezone bugs!
 
 ---
 © 2026 BrewHouse Cafe Management. All rights reserved.
