@@ -64,6 +64,15 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<CafeDbContext>();
     db.Database.Migrate();
 
+    // ═══ ONE-TIME CLEANUP (Optional: Remove after first run) ═══
+    if (Environment.GetEnvironmentVariable("CLEAN_DATABASE") == "true")
+    {
+        db.OrderItems.RemoveRange(db.OrderItems);
+        db.Orders.RemoveRange(db.Orders);
+        db.Users.RemoveRange(db.Users.Where(u => u.Role == UserRole.Customer));
+        db.SaveChanges();
+    }
+
     // ═══ RUNTIME SEEDER (Reads from .env) ═══
     var adminName = Environment.GetEnvironmentVariable("ADMIN_NAME") ?? "Admin";
     var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? "admin@cafe.com";
