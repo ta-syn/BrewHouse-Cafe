@@ -95,6 +95,36 @@ using (var scope = app.Services.CreateScope())
         });
     }
     db.SaveChanges();
+
+    // ═══ ORDER ID SANITIZATION ═══
+    // If there are orders but they start from a high number (like 11), shift them to start from 1
+    try
+    {
+        var allOrders = await db.Orders.OrderBy(o => o.CreatedAt).ToListAsync();
+        if (allOrders.Any() && allOrders.First().Id != 1)
+        {
+            int offset = allOrders.First().Id - 1;
+            foreach (var order in allOrders)
+            {
+                var oldId = order.Id;
+                var newId = oldId - offset;
+
+                // Update both Order and its Items using raw SQL to bypass EF tracking for ID changes
+                await db.Database.ExecuteSqlRawAsync($"UPDATE \"OrderItems\" SET \"OrderId\" = {newId} WHERE \"OrderId\" = {oldId}");
+                await db.Database.ExecuteSqlRawAsync($"UPDATE \"Orders\" SET \"Id\" = {newId} WHERE \"Id\" = {oldId}");
+            }
+
+            // Reset the sequence so next order is max(Id) + 1
+            var maxId = allOrders.Max(o => o.Id) - offset;
+            await db.Database.ExecuteSqlRawAsync($"SELECT setval(pg_get_serial_sequence('\"Orders\"', 'Id'), {maxId}, true)");
+            
+            Console.WriteLine($"[DB CLEANUP] Successfully shifted {allOrders.Count} orders and reset sequence to {maxId}.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[DB CLEANUP] Sequence reset skipped: {ex.Message}");
+    }
 }
 
 app.Run();
