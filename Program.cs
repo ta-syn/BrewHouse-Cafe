@@ -96,34 +96,51 @@ using (var scope = app.Services.CreateScope())
     }
     db.SaveChanges();
 
-    // ═══ ORDER ID SANITIZATION ═══
-    // If there are orders but they start from a high number (like 11), shift them to start from 1
+    // ═══ ORDER ID SANITIZATION (STRICT SYNC) ═══
     try
     {
-        var allOrders = await db.Orders.OrderBy(o => o.CreatedAt).ToListAsync();
-        if (allOrders.Any() && allOrders.First().Id != 1)
+        Console.WriteLine("[DB CLEANUP] Checking for order ID consistency...");
+        var allOrders = db.Orders.OrderBy(o => o.CreatedAt).ToList();
+        
+        if (allOrders.Any())
         {
-            int offset = allOrders.First().Id - 1;
-            foreach (var order in allOrders)
-            {
-                var oldId = order.Id;
-                var newId = oldId - offset;
-
-                // Update both Order and its Items using raw SQL to bypass EF tracking for ID changes
-                await db.Database.ExecuteSqlRawAsync($"UPDATE \"OrderItems\" SET \"OrderId\" = {newId} WHERE \"OrderId\" = {oldId}");
-                await db.Database.ExecuteSqlRawAsync($"UPDATE \"Orders\" SET \"Id\" = {newId} WHERE \"Id\" = {oldId}");
-            }
-
-            // Reset the sequence so next order is max(Id) + 1
-            var maxId = allOrders.Max(o => o.Id) - offset;
-            await db.Database.ExecuteSqlRawAsync($"SELECT setval(pg_get_serial_sequence('\"Orders\"', 'Id'), {maxId}, true)");
+            Console.WriteLine($"[DB CLEANUP] Found {allOrders.Count} orders. First Order ID: {allOrders.First().Id}");
             
-            Console.WriteLine($"[DB CLEANUP] Successfully shifted {allOrders.Count} orders and reset sequence to {maxId}.");
+            if (allOrders.First().Id != 1)
+            {
+                int offset = allOrders.First().Id - 1;
+                Console.WriteLine($"[DB CLEANUP] Shifting IDs with offset: {offset}");
+                
+                foreach (var order in allOrders)
+                {
+                    var oldId = order.Id;
+                    var newId = oldId - offset;
+
+                    db.Database.ExecuteSqlRaw($"UPDATE \"OrderItems\" SET \"OrderId\" = {newId} WHERE \"OrderId\" = {oldId}");
+                    db.Database.ExecuteSqlRaw($"UPDATE \"Orders\" SET \"Id\" = {newId} WHERE \"Id\" = {oldId}");
+                }
+
+                var maxId = allOrders.Max(o => o.Id) - offset;
+                db.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('\"Orders\"', 'Id'), {maxId}, true)");
+                
+                Console.WriteLine($"[DB CLEANUP] SUCCESS: Shifted {allOrders.Count} orders. Max ID is now {maxId}.");
+            }
+            else
+            {
+                Console.WriteLine("[DB CLEANUP] Order ID is already 1. No shifting needed.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("[DB CLEANUP] No orders found to sanitize.");
+            // Reset sequence to 0 just in case there are no orders
+            db.Database.ExecuteSqlRaw("SELECT setval(pg_get_serial_sequence('\"Orders\"', 'Id'), 1, false)");
         }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[DB CLEANUP] Sequence reset skipped: {ex.Message}");
+        Console.WriteLine($"[DB CLEANUP] ERROR: {ex.Message}");
+        if (ex.InnerException != null) Console.WriteLine($"[DB CLEANUP] INNER ERROR: {ex.InnerException.Message}");
     }
 }
 
