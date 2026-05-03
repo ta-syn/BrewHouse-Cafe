@@ -129,7 +129,7 @@ namespace CafeManagement.Controllers
                 string userName = HttpContext.Session.GetString("UserName") ?? "Customer";
                 string? discountCode = HttpContext.Session.GetString("DiscountCode");
                 
-                var order = await _orderService.CreateOrderAsync(userId, userName, cart, discountCode, tableId);
+                var order = await _orderService.CreateOrderAsync(userId, userName, cart, discountCode, tableId, notes);
                 
                 // Clear cart and discount after order
                 HttpContext.Session.Remove("Cart");

@@ -4,15 +4,19 @@ function updateCartCount() {
         .then(r => r.json())
         .then(data => {
             const badge = document.getElementById('cart-count');
-            if (badge) {
-                badge.textContent = data.count;
-                if (data.count > 0) {
-                    badge.classList.remove('d-none');
-                    badge.classList.add('animate__animated', 'animate__bounceIn');
-                } else {
-                    badge.classList.add('d-none');
+            const badgeMobile = document.getElementById('cart-count-mobile');
+            
+            [badge, badgeMobile].forEach(el => {
+                if (el) {
+                    el.textContent = data.count;
+                    if (data.count > 0) {
+                        el.classList.remove('d-none');
+                        el.classList.add('animate__animated', 'animate__bounceIn');
+                    } else {
+                        el.classList.add('d-none');
+                    }
                 }
-            }
+            });
         })
         .catch(() => {});
 }
@@ -31,20 +35,24 @@ function addToCart(itemId) {
         success: function(data) {
             if (data.success) {
                 const badge = $('#cart-count');
-                if (badge.length) {
-                    badge.text(data.cartCount).removeClass('d-none');
-                    
-                    // Instant animation trigger
-                    badge.removeClass('animate__animated animate__bounceIn');
-                    void badge[0].offsetWidth; // force reflow
-                    badge.addClass('animate__animated animate__bounceIn');
-                    
-                    // Animate cart icon
-                    const icon = badge.parent().find('.fa-shopping-cart');
-                    icon.removeClass('animate__animated animate__rubberBand');
-                    void icon[0].offsetWidth;
-                    icon.addClass('animate__animated animate__rubberBand');
-                }
+                const badgeMobile = $('#cart-count-mobile');
+                
+                [badge, badgeMobile].forEach(el => {
+                    if (el.length) {
+                        el.text(data.cartCount).removeClass('d-none');
+                        
+                        // Instant animation trigger
+                        el.removeClass('animate__animated animate__bounceIn');
+                        void el[0].offsetWidth; // force reflow
+                        el.addClass('animate__animated animate__bounceIn');
+                        
+                        // Animate cart icon
+                        const icon = el.parent().find('.fa-shopping-cart');
+                        icon.removeClass('animate__animated animate__rubberBand');
+                        void icon[0].offsetWidth;
+                        icon.addClass('animate__animated animate__rubberBand');
+                    }
+                });
                 
                 showToast('Added to your basket!', 'success');
             } else {
@@ -87,12 +95,68 @@ function showToast(message, type = 'success') {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Mobile sidebar toggle
+    // Mobile sidebar toggle with backdrop
     const toggleBtn = document.getElementById('sidebar-toggle');
     const sidebar = document.querySelector('.sidebar');
+    
     if (toggleBtn && sidebar) {
-        toggleBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
+        // Create backdrop element if it doesn't exist
+        let backdrop = document.querySelector('.sidebar-backdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('div');
+            backdrop.className = 'sidebar-backdrop';
+            document.body.appendChild(backdrop);
+        }
+
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('open');
+            backdrop.classList.toggle('show');
+            document.body.classList.toggle('sidebar-open');
+            
+            // Animate hamburger icon if present
+            const icon = toggleBtn.querySelector('.hamburger-icon');
+            if (icon) icon.classList.toggle('active');
+        });
+
+        backdrop.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            backdrop.classList.remove('show');
+            document.body.classList.remove('sidebar-open');
+            
+            const icon = toggleBtn.querySelector('.hamburger-icon');
+            if (icon) icon.classList.remove('active');
+        });
+
+        // Close sidebar on link click (mobile)
+        const navLinks = sidebar.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 992) {
+                    sidebar.classList.remove('open');
+                    backdrop.classList.remove('show');
+                    document.body.classList.remove('sidebar-open');
+                    
+                    const icon = toggleBtn.querySelector('.hamburger-icon');
+                    if (icon) icon.classList.remove('active');
+                }
+            });
+        });
     }
+
+    // Navbar scroll effect
+    const navbar = document.querySelector('.navbar');
+    const adminHeader = document.querySelector('.admin-header');
+    
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 20) {
+            if (navbar) navbar.classList.add('scrolled');
+            if (adminHeader) adminHeader.classList.add('scrolled');
+        } else {
+            if (navbar) navbar.classList.remove('scrolled');
+            if (adminHeader) adminHeader.classList.remove('scrolled');
+        }
+    });
 
     // Update cart count on load
     if (document.getElementById('cart-count')) updateCartCount();

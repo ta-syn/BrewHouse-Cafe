@@ -1,0 +1,101 @@
+@model IEnumerable<CafeManagement.Models.User>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Customer Management";
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Registered Customers</h2>
+            <p class="text-muted small mb-0">Track and manage your coffee community</p>
+        </div>
+        <div class="badge bg-coffee-light text-brown px-3 py-2 rounded-pill">
+            <i class="fas fa-users me-1"></i> @Model.Count() Total Users
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 border-0 py-3 text-uppercase small fw-bold text-muted">Customer</th>
+                        <th class="border-0 py-3 text-uppercase small fw-bold text-muted text-center">Join Date</th>
+                        <th class="border-0 py-3 text-uppercase small fw-bold text-muted text-center">Total Orders</th>
+                        <th class="pe-4 border-0 py-3 text-uppercase small fw-bold text-muted text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td class="ps-4" data-label="Customer">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-3 bg-coffee-light text-brown fw-bold d-flex align-items-center justify-content-center rounded-circle" style="width: 45px; height: 45px;">
+                                        @user.Name.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">@user.Name</div>
+                                        <div class="small text-muted">@user.Email</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center" data-label="Joined">
+                                <div class="fw-semibold text-dark">@user.CreatedAt.AddHours(6).ToString("MMM dd, yyyy")</div>
+                                <div class="small text-muted">@user.CreatedAt.AddHours(6).ToString("HH:mm")</div>
+                            </td>
+                            <td class="text-center" data-label="Orders">
+                                <a asp-action="AllOrders" asp-route-userId="@user.Id" class="text-decoration-none">
+                                    <span class="badge rounded-pill bg-success-light text-success border-success border-opacity-25 px-3 hover-shadow transition-all">
+                                        <i class="fas fa-shopping-bag me-1"></i> @(user.Orders?.Count ?? 0) Orders
+                                    </span>
+                                </a>
+                            </td>
+                            <td class="text-end pe-4" data-label="Action">
+                                <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 text-danger" title="Remove" onclick="confirmDeleteUser(@user.Id, '@user.Name')">
+                                    <i class="fas fa-trash-alt me-1"></i> Remove
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fas fa-user-slash fa-3x mb-3 opacity-25"></i>
+                                <p>No registered customers yet.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDeleteUser(id, name) {
+            Swal.fire({
+                title: 'Remove Customer?',
+                text: `Are you sure you want to remove ${name}? This will delete their account permanently.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#2C1810',
+                confirmButtonText: 'Yes, remove them!',
+                background: '#fff',
+                borderRadius: '15px'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/Admin/DeleteStaff/' + id; // Using existing delete user logic
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+}

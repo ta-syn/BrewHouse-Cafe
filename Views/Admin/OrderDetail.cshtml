@@ -31,9 +31,9 @@
                                 @foreach (var item in Model.OrderItems)
                                 {
                                     <tr>
-                                        <td class="ps-4">
+                                        <td class="ps-4" data-label="Item">
                                             <div class="d-flex align-items-center">
-                                                <div class="me-3 rounded-3 overflow-hidden bg-light shadow-sm" style="width: 50px; height: 50px;">
+                                                <div class="me-3 rounded-3 overflow-hidden bg-light shadow-sm d-none-mobile" style="width: 50px; height: 50px;">
                                                     @if (!string.IsNullOrEmpty(item.MenuItem?.ImageUrl))
                                                     {
                                                         <img src="@item.MenuItem.ImageUrl" class="w-100 h-100 object-fit-cover" alt="@item.ItemName">
@@ -46,9 +46,9 @@
                                                 <div class="fw-bold">@item.ItemName</div>
                                             </div>
                                         </td>
-                                        <td class="text-center">৳@item.UnitPrice</td>
-                                        <td class="text-center">@item.Quantity</td>
-                                        <td class="text-end pe-4 fw-bold">৳@item.Subtotal</td>
+                                        <td class="text-center" data-label="Price">৳@item.UnitPrice</td>
+                                        <td class="text-center" data-label="Qty">@item.Quantity</td>
+                                        <td class="text-end pe-4 fw-bold" data-label="Subtotal">৳@item.Subtotal</td>
                                     </tr>
                                 }
                             </tbody>
@@ -94,7 +94,7 @@
 
                     <div class="mb-4">
                         <div class="text-muted small mb-1"><i class="far fa-calendar-alt me-1"></i> Order Date</div>
-                        <div class="fw-semibold">@Model.CreatedAt.ToString("MMMM dd, yyyy") at @Model.CreatedAt.ToString("hh:mm tt")</div>
+                        <div class="fw-semibold">@Model.CreatedAt.AddHours(6).ToString("MMMM dd, yyyy") at @Model.CreatedAt.AddHours(6).ToString("hh:mm tt")</div>
                     </div>
 
                     @if (Model.TableId.HasValue)

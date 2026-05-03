@@ -69,12 +69,12 @@
     <!-- Search and Filter -->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-lg rounded-pill p-1 search-wrapper">
+            <div class="card border-0 shadow-lg rounded-pill-lg p-1 search-wrapper">
                 <form asp-action="Menu" method="get" class="d-flex align-items-center">
                     <div class="flex-grow-1 position-relative d-flex align-items-center">
                         <i class="fas fa-search position-absolute ms-4 text-muted"></i>
-                        <input type="text" name="search" class="form-control border-0 bg-transparent py-3 ps-5 fs-5" 
-                               placeholder="Searching for something specific? (e.g. Latte, Burger...)" 
+                        <input type="text" name="search" class="form-control border-0 bg-transparent py-3 ps-5" 
+                               placeholder="Search items..." 
                                value="@ViewBag.SearchQuery">
                     </div>
                     <button class="btn btn-coffee rounded-pill px-5 py-2 fw-bold shadow-sm me-1" type="submit">
@@ -86,7 +86,7 @@
     </div>
 
     <!-- Category Filter -->
-    <div class="category-scroll justify-content-center gap-3 mb-5 pb-3">
+    <div class="category-scroll justify-content-lg-center gap-3 mb-5 pb-3">
         <a asp-action="Menu" class="btn btn-outline-dark category-btn rounded-pill px-4 py-2 fw-bold @(string.IsNullOrEmpty(ViewBag.SelectedCategory) ? "active" : "")">
             All Items
         </a>

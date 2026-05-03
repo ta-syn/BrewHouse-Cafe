@@ -13,7 +13,7 @@ namespace CafeManagement.Services
 
         public async Task<Order> CreateOrderAsync(
                 int? userId, string customerName,
-                List<CartItem> cartItems, string? discountCode, int? tableId = null) {
+                List<CartItem> cartItems, string? discountCode, int? tableId = null, string? notes = null) {
             // ═══ OOP CONCEPT: EXCEPTION HANDLING ═══
             try {
                 if (cartItems == null || cartItems.Count == 0)
@@ -41,6 +41,7 @@ namespace CafeManagement.Services
                     TotalAmount = totalAmount,
                     DiscountApplied = discountPercent,
                     Status = OrderStatus.Pending,
+                    Notes = notes ?? string.Empty,
                     IsWalkIn = userId == null,
                     CreatedAt = DateTime.UtcNow.AddHours(6), // SYNC: Bangladesh Time (UTC+6)
                     OrderItems = cartItems.Select(c => new OrderItem {
@@ -51,11 +52,11 @@ namespace CafeManagement.Services
                     }).ToList()
                 };
 
-                // Update table status to Occupied if table selected
-                if (tableId.HasValue) {
+                // Manual table status management requested by user
+                /* if (tableId.HasValue) {
                     var table = await _context.CafeTables.FindAsync(tableId.Value);
                     if (table != null) table.Status = TableStatus.Occupied;
-                }
+                } */
 
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();

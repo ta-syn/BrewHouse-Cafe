@@ -77,13 +77,13 @@ namespace CafeManagement.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> WalkInOrder(string itemsJson, int? tableId, string customerName = "Walk-in Customer") {
+        public async Task<IActionResult> WalkInOrder(string itemsJson, int? tableId, string? notes, string customerName = "Walk-in Customer") {
             try {
                 // FIX: userId = null for walk-in, IsWalkIn = true
                 var cartItems = JsonSerializer.Deserialize<List<CartItem>>(itemsJson);
                 if (cartItems == null || !cartItems.Any())
                     throw new OrderException("No items selected.");
-                var order = await _orderService.CreateOrderAsync(null, customerName, cartItems, null, tableId);
+                var order = await _orderService.CreateOrderAsync(null, customerName, cartItems, null, tableId, notes);
                 TempData["Success"] = $"Walk-in Order #{order.Id} created!";
                 return RedirectToAction("ActiveOrders");
             } catch (Exception ex) {

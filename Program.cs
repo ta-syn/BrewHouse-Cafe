@@ -100,6 +100,48 @@ using (var scope = app.Services.CreateScope())
     }
     db.SaveChanges();
 
+    // ═══ HARD RESET (Requested by USER) ═══
+    Console.WriteLine("[HARD RESET] Starting full system wipe...");
+    
+    // 1. Clear all orders first (to avoid FK constraints)
+    db.Database.ExecuteSqlRaw("TRUNCATE TABLE \"OrderItems\", \"Orders\" RESTART IDENTITY CASCADE");
+    
+    // 2. Remove all users except Admin and Staff
+    var testUsers = db.Users.Where(u => u.Email != adminEmail && u.Email != staffEmail).ToList();
+    if (testUsers.Any())
+    {
+        Console.WriteLine($"[HARD RESET] Removing {testUsers.Count} test users...");
+        db.Users.RemoveRange(testUsers);
+    }
+
+    // 3. Reset table statuses
+    db.Database.ExecuteSqlRaw("UPDATE \"CafeTables\" SET \"Status\" = 0"); // 0 = Available
+    db.SaveChanges();
+
+    // ═══ TABLE SEEDER (Sync to exactly 8 tables) ═══
+    var currentTables = db.CafeTables.OrderBy(t => t.TableNumber).ToList();
+    if (currentTables.Count != 8)
+    {
+        Console.WriteLine($"[DB SEED] Syncing tables... Current: {currentTables.Count}, Target: 8");
+        
+        if (currentTables.Count < 8)
+        {
+            // Add missing tables
+            int startFrom = currentTables.Any() ? currentTables.Max(t => t.TableNumber) + 1 : 1;
+            for (int i = startFrom; i <= 8; i++)
+            {
+                db.CafeTables.Add(new CafeTable { TableNumber = i, Capacity = 4, Status = TableStatus.Available });
+            }
+        }
+        else
+        {
+            // Remove extra tables (highest numbers first)
+            var toRemove = currentTables.OrderByDescending(t => t.TableNumber).Take(currentTables.Count - 8);
+            db.CafeTables.RemoveRange(toRemove);
+        }
+        db.SaveChanges();
+    }
+
     // ═══ ORDER ID SANITIZATION (COPY-SWAP METHOD) ═══
     try
     {

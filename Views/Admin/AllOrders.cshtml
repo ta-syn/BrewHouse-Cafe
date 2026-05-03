@@ -8,7 +8,13 @@
 <div class="container-fluid">
     <div class="card border-0 shadow-sm rounded-3">
         <div class="card-header bg-white border-0 py-3 d-flex flex-wrap justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-clipboard-list text-brown me-2"></i> Order History</h5>
+            <div>
+                <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-clipboard-list text-brown me-2"></i> Order History</h5>
+                @if (ViewBag.CustomerName != null)
+                {
+                    <p class="text-muted small mb-0 mt-1"><i class="fas fa-filter me-1"></i> Showing orders for: <span class="fw-bold text-brown">@ViewBag.CustomerName</span></p>
+                }
+            </div>
             <div class="d-flex gap-2">
                 <form asp-action="AllOrders" method="get" class="d-flex gap-2">
                     <select name="status" class="form-select form-select-sm rounded-pill ps-3 pe-5 border-2" style="min-width: 160px; cursor: pointer;" onchange="this.form.submit()">
@@ -39,14 +45,14 @@
                         @foreach (var order in Model)
                         {
                             <tr>
-                                <td class="ps-4">
+                                <td class="ps-4" data-label="Order ID">
                                     <span class="fw-bold text-muted">#@order.Id</span>
                                 </td>
-                                <td>
-                                    <div class="fw-bold text-dark">
+                                <td data-label="Customer">
+                                    <div class="fw-bold text-dark text-end-mobile">
                                         @(order.IsWalkIn ? order.CustomerName : order.User?.Name)
                                     </div>
-                                    <div class="d-flex align-items-center gap-1 mt-1">
+                                    <div class="d-flex align-items-center justify-content-end-mobile gap-1 mt-1">
                                         @if(order.IsWalkIn) { <span class="badge bg-light text-muted border-0 small px-2">Walk-in</span> }
                                         @if(order.TableId.HasValue) {
                                             <span class="badge bg-coffee-light text-brown border-0 px-2" style="font-size: 0.7rem;">
@@ -55,17 +61,17 @@
                                         }
                                     </div>
                                 </td>
-                                <td>
-                                    <div class="small text-dark fw-semibold">@order.CreatedAt.ToString("MMM dd, yyyy")</div>
-                                    <div class="small text-muted">@order.CreatedAt.ToString("HH:mm")</div>
+                                <td data-label="Date">
+                                    <div class="small text-dark fw-semibold">@order.CreatedAt.AddHours(6).ToString("MMM dd, yyyy")</div>
+                                    <div class="small text-muted">@order.CreatedAt.AddHours(6).ToString("HH:mm")</div>
                                 </td>
-                                <td class="fw-bold text-brown">৳@order.TotalAmount</td>
-                                <td>
+                                <td class="fw-bold text-brown" data-label="Amount">৳@order.TotalAmount</td>
+                                <td data-label="Items">
                                     <span class="badge bg-light text-dark border-0 rounded-pill px-3 py-1">
                                         @order.OrderItems.Count Items
                                     </span>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center" data-label="Status">
                                     @{
                                         var statusConfig = order.Status switch {
                                             OrderStatus.Pending => new { Bg = "#fff3e0", Color = "#ed6c02", Icon = "fa-clock" },
@@ -80,7 +86,7 @@
                                         <i class="fas @statusConfig.Icon me-1"></i> @order.Status
                                     </span>
                                 </td>
-                                <td class="text-end pe-4">
+                                <td class="text-end pe-4" data-label="Action">
                                     <a asp-action="OrderDetail" asp-route-id="@order.Id" class="btn btn-sm btn-outline-dark rounded-pill px-3 border-2 fw-bold">
                                         Details
                                     </a>
@@ -94,8 +100,4 @@
     </div>
 </div>
 
-<style>
-    .bg-coffee-light { background-color: #fdf5ef; }
-    .text-brown { color: #4e342e; }
-    .border-2 { border-width: 2px !important; }
-</style>
+

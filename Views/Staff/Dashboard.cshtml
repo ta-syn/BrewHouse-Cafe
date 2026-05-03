@@ -12,13 +12,13 @@
         <div class="col-md-6">
             <div class="stat-card-dual bg-premium-coffee h-100 shadow-lg">
                 <div class="stat-icon-bg"><i class="fas fa-shopping-bag"></i></div>
-                <div class="row align-items-center h-100 position-relative z-1">
-                    <div class="col-6 border-end border-white border-opacity-10 py-2">
-                        <div class="stat-label-sm">Today's Orders</div>
+                <div class="row g-0 align-items-center h-100 position-relative z-1">
+                    <div class="col-6 col-sm-6 border-end border-white border-opacity-10 py-2">
+                        <div class="stat-label-sm">Today</div>
                         <div class="stat-value-lg">@ViewBag.TodayCount</div>
                     </div>
-                    <div class="col-6 py-2">
-                        <div class="stat-label-sm">Total Orders</div>
+                    <div class="col-6 col-sm-6 py-2 ps-3">
+                        <div class="stat-label-sm">Total</div>
                         <div class="stat-value-lg text-amber">@ViewBag.TotalCount</div>
                     </div>
                 </div>
@@ -29,13 +29,13 @@
         <div class="col-md-6">
             <div class="stat-card-dual bg-premium-dark h-100 shadow-lg">
                 <div class="stat-icon-bg"><i class="fas fa-money-bill-wave"></i></div>
-                <div class="row align-items-center h-100 position-relative z-1">
-                    <div class="col-6 border-end border-white border-opacity-10 py-2">
-                        <div class="stat-label-sm">Pending Orders</div>
+                <div class="row g-0 align-items-center h-100 position-relative z-1">
+                    <div class="col-6 col-sm-6 border-end border-white border-opacity-10 py-2">
+                        <div class="stat-label-sm">Pending</div>
                         <div class="stat-value-lg text-danger">@ViewBag.PendingCount</div>
                     </div>
-                    <div class="col-6 py-2">
-                        <div class="stat-label-sm">Today's Revenue</div>
+                    <div class="col-6 col-sm-6 py-2 ps-3">
+                        <div class="stat-label-sm">Revenue</div>
                         <div class="stat-value-lg text-success">৳@ViewBag.TodayRevenue</div>
                     </div>
                 </div>
@@ -154,4 +154,12 @@
     .text-coffee { color: #4e342e; }
     .btn-coffee { background: #4e342e; color: white; border: none; }
     .btn-coffee:hover { background: #3e2723; color: white; }
+    @@media (max-width: 768px) {
+        .stat-card-dual { padding: 1.5rem 1rem; margin-bottom: 0; }
+        .stat-value-lg { font-size: 1.5rem; }
+        .stat-label-sm { font-size: 0.65rem; letter-spacing: 1px; }
+        .premium-table-container { padding: 1rem; border-radius: 15px; }
+        .premium-table-container h5 { font-size: 1rem; }
+        .premium-table-container .badge { font-size: 0.7rem !important; }
+    }
 </style>

@@ -12,13 +12,13 @@
         <div class="col-md-6">
             <div class="stat-card-dual bg-premium-dark h-100 shadow-lg">
                 <div class="stat-icon-bg"><i class="fas fa-sack-dollar"></i></div>
-                <div class="row align-items-center h-100 position-relative z-1">
-                    <div class="col-6 border-end border-white border-opacity-10 py-2">
-                        <div class="stat-label-sm">Today's Revenue</div>
+                <div class="row g-0 align-items-center h-100 position-relative z-1">
+                    <div class="col-6 col-sm-6 border-end border-white border-opacity-10 py-2">
+                        <div class="stat-label-sm">Today</div>
                         <div class="stat-value-lg">৳@Model.TodayRevenue</div>
                     </div>
-                    <div class="col-6 py-2">
-                        <div class="stat-label-sm">Total Revenue</div>
+                    <div class="col-6 col-sm-6 py-2 ps-3">
+                        <div class="stat-label-sm">Total</div>
                         <div class="stat-value-lg text-amber">৳@Model.TotalRevenue</div>
                     </div>
                 </div>
@@ -29,15 +29,47 @@
         <div class="col-md-6">
             <div class="stat-card-dual bg-premium-coffee h-100 shadow-lg">
                 <div class="stat-icon-bg"><i class="fas fa-shopping-basket"></i></div>
-                <div class="row align-items-center h-100 position-relative z-1">
-                    <div class="col-6 border-end border-white border-opacity-10 py-2">
-                        <div class="stat-label-sm">Today's Orders</div>
+                <div class="row g-0 align-items-center h-100 position-relative z-1">
+                    <div class="col-6 col-sm-6 border-end border-white border-opacity-10 py-2">
+                        <div class="stat-label-sm">Today</div>
                         <div class="stat-value-lg">@Model.TodayOrders</div>
                     </div>
-                    <div class="col-6 py-2">
-                        <div class="stat-label-sm">Total Orders</div>
+                    <div class="col-6 col-sm-6 py-2 ps-3">
+                        <div class="stat-label-sm">Total</div>
                         <div class="stat-value-lg text-amber">@Model.TotalOrders</div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- Stat Card: Total Customers -->
+        <div class="col-md-6">
+            <div class="stat-card-dual bg-premium-indigo h-100 shadow-lg">
+                <div class="stat-icon-bg"><i class="fas fa-user-friends"></i></div>
+                <div class="d-flex align-items-center h-100 position-relative z-1">
+                    <div>
+                        <div class="stat-label-sm">Total Customers</div>
+                        <div class="stat-value-lg">@Model.TotalCustomers</div>
+                        <div class="small mt-2 opacity-75">Registered in community</div>
+                    </div>
+                    <a asp-action="UserList" class="btn btn-sm btn-light rounded-pill px-3 ms-auto shadow-sm fw-bold">Manage</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat Card: Menu Items -->
+        <div class="col-md-6">
+            <div class="stat-card-dual bg-premium-teal h-100 shadow-lg">
+                <div class="stat-icon-bg"><i class="fas fa-utensils"></i></div>
+                <div class="d-flex align-items-center h-100 position-relative z-1">
+                    <div>
+                        <div class="stat-label-sm">Menu Items</div>
+                        <div class="stat-value-lg">@Model.TotalItems</div>
+                        <div class="small mt-2 opacity-75">Active offerings</div>
+                    </div>
+                    <a asp-action="MenuList" class="btn btn-sm btn-light rounded-pill px-3 ms-auto shadow-sm fw-bold">View Menu</a>
                 </div>
             </div>
         </div>
@@ -168,6 +200,8 @@
     .stat-card-dual:hover { transform: translateY(-8px); }
     .bg-premium-dark { background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); }
     .bg-premium-coffee { background: linear-gradient(135deg, #2C1810 0%, #4e342e 100%); }
+    .bg-premium-indigo { background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%); }
+    .bg-premium-teal { background: linear-gradient(135deg, #009688 0%, #26a69a 100%); }
     .stat-label-sm {
         font-size: 0.75rem;
         text-transform: uppercase;
@@ -215,4 +249,10 @@
     .text-coffee { color: #4e342e; }
     .btn-coffee { background: #4e342e; color: white; border: none; }
     .btn-coffee:hover { background: #3e2723; color: white; }
+    @@media (max-width: 768px) {
+        .stat-card-dual { padding: 1.5rem 1rem; margin-bottom: 0; }
+        .stat-value-lg { font-size: 1.5rem; }
+        .stat-label-sm { font-size: 0.65rem; letter-spacing: 1px; }
+        .premium-table-container { padding: 1rem; border-radius: 15px; }
+    }
 </style>

@@ -10,6 +10,7 @@ namespace CafeManagement.Models.ViewModels
         public int TotalOrders { get; set; }
         public int TodayOrders { get; set; }
         public int TotalItems { get; set; }
+        public int TotalCustomers { get; set; }
         public List<PopularItemViewModel> PopularItems { get; set; } = new();
         public List<Order> RecentOrders { get; set; } = new();
     }

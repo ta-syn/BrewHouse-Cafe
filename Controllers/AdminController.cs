@@ -43,6 +43,7 @@ namespace CafeManagement.Controllers
                     TotalOrders = await _dashboardService.GetTotalOrdersAsync(),
                     TodayOrders = await _dashboardService.GetTodayOrdersAsync(),
                     TotalItems = await _dashboardService.GetTotalMenuItemsAsync(),
+                    TotalCustomers = await _context.Users.CountAsync(u => u.Role == UserRole.Customer),
                     PopularItems = await _dashboardService.GetPopularItemsAsync(5),
                     RecentOrders = await _dashboardService.GetRecentOrdersAsync(10)
                 };
@@ -248,9 +249,16 @@ namespace CafeManagement.Controllers
             return RedirectToAction("MenuList");
         }
 
-        public async Task<IActionResult> AllOrders(string? status) {
+        public async Task<IActionResult> AllOrders(string? status, int? userId) {
             try {
                 var orders = await _orderService.GetAllOrdersAsync();
+                
+                if (userId.HasValue) {
+                    orders = orders.Where(o => o.UserId == userId.Value).ToList();
+                    var user = await _context.Users.FindAsync(userId.Value);
+                    ViewBag.CustomerName = user?.Name;
+                }
+
                 if (!string.IsNullOrEmpty(status) &&
                     Enum.TryParse<OrderStatus>(status, out var s))
                     orders = orders.Where(o => o.Status == s).ToList();
@@ -305,6 +313,15 @@ namespace CafeManagement.Controllers
             try { await _authService.DeleteUserAsync(id); TempData["Success"] = "Staff removed."; }
             catch (Exception ex) { TempData["Error"] = ex.Message; }
             return RedirectToAction("StaffList");
+        }
+
+        public async Task<IActionResult> UserList() {
+            var users = await _context.Users
+                .Include(u => u.Orders)
+                .Where(u => u.Role == UserRole.Customer)
+                .OrderByDescending(u => u.CreatedAt)
+                .ToListAsync();
+            return View(users);
         }
 
         public async Task<IActionResult> TableList() =>

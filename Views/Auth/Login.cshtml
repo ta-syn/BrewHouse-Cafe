@@ -23,9 +23,9 @@
 
     <style>
         :root { --coffee-dark: #2C1810; --coffee-accent: #D4A574; --glass: rgba(255, 255, 255, 0.95); }
-        body { font-family: 'Inter', sans-serif; background: #f8f9fa; height: 100vh; overflow: hidden; }
-        .auth-container { height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .auth-wrapper { width: 1000px; max-width: 95%; background: #fff; border-radius: 30px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden; }
+        .auth-container { width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-wrapper { width: 1000px; max-width: 100%; background: #fff; border-radius: 30px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); min-height: 600px; }
         .side-panel { background: linear-gradient(rgba(44, 24, 16, 0.4), rgba(44, 24, 16, 0.6)), url('/images/auth/login_bg.png'); background-size: cover; background-position: center; padding: 60px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
         .form-panel { padding: 60px; background: #fff; }
         .display-font { font-family: 'Playfair Display', serif; }
@@ -35,6 +35,13 @@
         .form-control:focus { border-color: var(--coffee-accent); box-shadow: none; }
         .input-group-text { border-radius: 12px; background: #f8f9fa; border: 2px solid #f0f0f0; }
         .letter-spacing-1 { letter-spacing: 1px; }
+
+        @@media (max-width: 991px) {
+            body { height: auto; overflow: auto; padding: 20px 0; }
+            .auth-wrapper { border-radius: 20px; }
+            .form-panel { padding: 40px 25px; }
+            .side-panel { display: none !important; }
+        }
     </style>
 </head>
 <body>
