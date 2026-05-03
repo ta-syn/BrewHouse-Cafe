@@ -1,0 +1,34 @@
+@if (TempData["Success"] != null) {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '@TempData["Success"]',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end',
+                background: '#f8fff8'
+            });
+        });
+    </script>
+}
+@if (TempData["Error"] != null) {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '@TempData["Error"]',
+                timer: 4000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end',
+                background: '#fff8f8'
+            });
+        });
+    </script>
+}

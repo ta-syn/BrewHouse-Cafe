@@ -1,0 +1,94 @@
+@model CafeManagement.Models.Order
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="d-flex justify-content-between align-items-end mb-5">
+                <div>
+                    <h2 class="display-5 fw-bold text-coffee mb-0">Order Details</h2>
+                    <p class="text-muted mb-0">Order #@Model.Id placed on @Model.CreatedAt.ToString("f")</p>
+                </div>
+                <button class="btn btn-outline-dark rounded-pill" onclick="window.print()"><i class="fas fa-print me-2"></i> Print Invoice</button>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3 border-0">Item</th>
+                                    <th class="text-center py-3 border-0">Price</th>
+                                    <th class="text-center py-3 border-0">Qty</th>
+                                    <th class="text-end pe-4 py-3 border-0">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td class="ps-4 py-3">
+                                            <span class="fw-bold">@item.ItemName</span>
+                                        </td>
+                                        <td class="text-center">৳@item.UnitPrice</td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        <td class="text-end pe-4 fw-bold">৳@item.Subtotal</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold mb-4">Payment Summary</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Subtotal</span>
+                            <span class="fw-semibold">৳@(Model.TotalAmount / (1 - Model.DiscountApplied/100))</span>
+                        </div>
+                        @if(Model.DiscountApplied > 0)
+                        {
+                            <div class="d-flex justify-content-between mb-2 text-success">
+                                <span>Discount (@Model.DiscountApplied%)</span>
+                                <span>-৳@(Model.TotalAmount * (Model.DiscountApplied/100) / (1 - Model.DiscountApplied/100))</span>
+                            </div>
+                        }
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="fs-5 fw-bold">Total Paid</span>
+                            <span class="fs-5 fw-bold text-coffee">৳@Model.TotalAmount</span>
+                        </div>
+                        
+                        <div class="bg-light p-3 rounded-3 mb-2">
+                            <label class="small text-muted d-block mb-1">Status</label>
+                            <span class="fw-bold text-coffee">@Model.Status</span>
+                        </div>
+                        @if (Model.TableId.HasValue)
+                        {
+                            <div class="bg-light p-3 rounded-3 mb-2">
+                                <label class="small text-muted d-block mb-1">Assigned Table</label>
+                                <span class="badge bg-success rounded-pill px-3 py-2">
+                                    <i class="fas fa-chair me-1"></i>Table @Model.Table?.TableNumber
+                                </span>
+                            </div>
+                        }
+                    </div>
+                    
+                    <a asp-action="TrackOrder" asp-route-id="@Model.Id" class="btn btn-coffee w-100 rounded-pill fw-bold py-3 shadow">Track Order Progress</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        .navbar, .btn, footer, hr { display: none !important; }
+        .card { border: 1px solid #ddd !important; box-shadow: none !important; }
+    }
+</style>

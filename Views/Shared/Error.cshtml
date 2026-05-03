@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "System Error";
+    Layout = "_CustomerLayout";
+}
+
+<div class="container py-5 my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <div class="card border-0 shadow-lg rounded-4 p-5 overflow-hidden position-relative">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background-image: url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M30 30L0 60V0L30 30Z\" fill=\"%234e342e\"/%3E%3C/svg%3E');"></div>
+                <div class="position-relative z-1">
+                    <div class="display-1 mb-4 text-coffee opacity-50"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="display-5 fw-bold mb-3 text-dark">Unexpected Brew</h2>
+                    <p class="text-muted fs-5 mb-5">
+                        @if (TempData["Error"] != null)
+                        {
+                            @TempData["Error"]
+                        }
+                        else
+                        {
+                            @:"Our system encountered a temporary hiccup while preparing your request. Don't worry, the baristas are already on it."
+                        }
+                    </p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-coffee btn-lg rounded-pill px-5 py-3 shadow">
+                            <i class="fas fa-home me-2"></i> Back to Safety
+                        </a>
+                        <button onclick="location.reload()" class="btn btn-outline-dark btn-lg rounded-pill px-4">
+                            <i class="fas fa-redo me-2"></i> Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-5 opacity-50">
+                <p class="small text-muted">If this persists, please contact our support team at <span class="fw-bold">support@brewhouse.com</span></p>
+            </div>
+        </div>
+    </div>
+</div>

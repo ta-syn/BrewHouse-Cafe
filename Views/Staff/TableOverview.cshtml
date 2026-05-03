@@ -1,0 +1,82 @@
+@using CafeManagement.Models.Enums
+@model IEnumerable<CafeManagement.Models.CafeTable>
+@{
+    Layout = "_StaffLayout";
+    ViewData["Title"] = "Table Overview";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h2 class="display-5 fw-bold text-coffee mb-0">Live Table View</h2>
+            <p class="text-muted mb-0">Real-time occupancy and status management</p>
+        </div>
+        <div class="d-flex gap-2">
+            <div class="badge bg-success rounded-pill px-3 py-2">Available: @Model.Count(t => t.Status == TableStatus.Available)</div>
+            <div class="badge bg-danger rounded-pill px-3 py-2">Occupied: @Model.Count(t => t.Status == TableStatus.Occupied)</div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var table in Model)
+        {
+            var statusClass = table.Status switch {
+                TableStatus.Available => "bg-success",
+                TableStatus.Occupied => "bg-danger",
+                TableStatus.Reserved => "bg-warning text-dark",
+                _ => "bg-secondary"
+            };
+
+            var iconColor = table.Status switch {
+                TableStatus.Available => "text-success",
+                TableStatus.Occupied => "text-danger",
+                TableStatus.Reserved => "text-warning",
+                _ => "text-secondary"
+            };
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden h-100 table-card transition-hover">
+                    <!-- Status Ribbon -->
+                    <div class="py-2 text-center text-white @statusClass fw-bold small text-uppercase letter-spacing-1">
+                        @table.Status
+                    </div>
+
+                    <div class="card-body p-4 text-center d-flex flex-column">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" style="width: 80px; height: 80px;">
+                                <i class="fas fa-chair fa-2x @iconColor"></i>
+                            </div>
+                        </div>
+                        
+                        <h4 class="fw-bold mb-1">Table @table.TableNumber</h4>
+                        <div class="d-flex justify-content-center gap-2 mb-4">
+                            <span class="badge bg-light text-dark border rounded-pill small">
+                                <i class="fas fa-users me-1 text-muted"></i> @table.Capacity Seats
+                            </span>
+                        </div>
+                        
+                        <form asp-action="UpdateTableStatus" method="post" class="mt-auto">
+                            <input type="hidden" name="tableId" value="@table.Id" />
+                            <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden border">
+                                <span class="input-group-text border-0 bg-white ps-3"><i class="fas fa-sync-alt text-muted"></i></span>
+                                <select name="status" class="form-select border-0 bg-white text-center fw-bold" onchange="this.form.submit()" style="cursor: pointer;">
+                                    @foreach (var status in Enum.GetValues<TableStatus>())
+                                    {
+                                        <option value="@status" selected="@(table.Status == status)">@status</option>
+                                    }
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .letter-spacing-1 { letter-spacing: 1px; }
+    .transition-hover { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .transition-hover:hover { transform: translateY(-10px); }
+    .table-silhouette { transition: all 0.3s ease; }
+</style>

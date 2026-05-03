@@ -1,0 +1,175 @@
+@using CafeManagement.Models.Enums
+@model List<CafeManagement.Models.MenuItem>
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Our Menu";
+}
+
+<style>
+    .category-scroll {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px 0;
+        scrollbar-width: none;
+    }
+    .category-scroll::-webkit-scrollbar { display: none; }
+    .category-btn {
+        white-space: nowrap;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+    }
+    .category-btn.active {
+        background-color: #4e342e !important;
+        color: white !important;
+        transform: scale(1.05);
+        box-shadow: 0 10px 20px rgba(78, 52, 46, 0.2);
+    }
+    .menu-card {
+        border: none;
+        border-radius: 25px;
+        transition: all 0.4s ease;
+        background: #fff;
+    }
+    .menu-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    }
+    .img-hover-zoom {
+        overflow: hidden;
+        border-radius: 25px 25px 0 0;
+    }
+    .img-hover-zoom img {
+        transition: transform 0.5s ease;
+    }
+    .menu-card:hover .img-hover-zoom img {
+        transform: scale(1.1);
+    }
+    .search-wrapper {
+        border: 1px solid rgba(0,0,0,0.05);
+        transition: box-shadow 0.3s ease;
+    }
+    .search-wrapper:focus-within {
+        box-shadow: 0 15px 30px rgba(78, 52, 46, 0.15) !important;
+    }
+    .search-wrapper input::placeholder {
+        color: #999 !important;
+        font-weight: 300;
+        opacity: 0.7;
+    }
+</style>
+
+<div class="container py-5">
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+        <span class="badge bg-coffee-light text-brown px-3 py-2 rounded-pill mb-3">GASTRONOMY SELECTIONS</span>
+        <h1 class="display-3 fw-bold text-coffee mb-3">Our Exquisite Menu</h1>
+        <p class="text-muted fs-5 mx-auto" style="max-width: 600px;">Explore our curated collection of artisanal beverages and gourmet delicacies.</p>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg rounded-pill p-1 search-wrapper">
+                <form asp-action="Menu" method="get" class="d-flex align-items-center">
+                    <div class="flex-grow-1 position-relative d-flex align-items-center">
+                        <i class="fas fa-search position-absolute ms-4 text-muted"></i>
+                        <input type="text" name="search" class="form-control border-0 bg-transparent py-3 ps-5 fs-5" 
+                               placeholder="Searching for something specific? (e.g. Latte, Burger...)" 
+                               value="@ViewBag.SearchQuery">
+                    </div>
+                    <button class="btn btn-coffee rounded-pill px-5 py-2 fw-bold shadow-sm me-1" type="submit">
+                        Find Now
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="category-scroll justify-content-center gap-3 mb-5 pb-3">
+        <a asp-action="Menu" class="btn btn-outline-dark category-btn rounded-pill px-4 py-2 fw-bold @(string.IsNullOrEmpty(ViewBag.SelectedCategory) ? "active" : "")">
+            All Items
+        </a>
+        @if (ViewBag.Categories != null)
+        {
+            foreach (var cat in (List<string>)ViewBag.Categories)
+            {
+                <a asp-action="Menu" asp-route-category="@cat" class="btn btn-outline-dark category-btn rounded-pill px-4 py-2 fw-bold @(ViewBag.SelectedCategory == cat ? "active" : "")">
+                    @cat
+                </a>
+            }
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-mug-hot fa-5x text-muted opacity-25"></i>
+            </div>
+            <h3 class="fw-bold">No matches found</h3>
+            <p class="text-muted">We couldn't find anything matching your search. Please try a different category or search term.</p>
+            <a asp-action="Menu" class="btn btn-coffee rounded-pill px-4 mt-3">Reset Filters</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="card menu-card shadow-sm h-100">
+                        <div class="img-hover-zoom position-relative" style="height: 260px;">
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" class="w-100 h-100 object-fit-cover" alt="@item.Name">
+                            }
+                            else
+                            {
+                                <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light text-muted display-1">@item.ImageEmoji</div>
+                            }
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-white text-dark shadow-sm rounded-pill px-3 py-2 small fw-bold">@item.Category</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="fw-bold mb-0">@item.Name</h4>
+                                <div class="fs-4 fw-bold text-coffee">৳@item.Price</div>
+                            </div>
+                            
+                            <p class="text-muted small mb-4 flex-grow-1">
+                                @item.Description
+                            </p>
+
+                            <div class="d-flex flex-wrap gap-2 mb-4 pt-3 border-top">
+                                @if (item is CafeManagement.Models.Beverage bev)
+                                {
+                                    <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                                        <i class="fas @(bev.IsHot ? "fa-mug-hot text-danger" : "fa-snowflake text-info") me-1"></i> @(bev.IsHot ? "Hot" : "Cold")
+                                    </span>
+                                    <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                                        <i class="fas fa-ruler-vertical text-muted me-1"></i> @bev.Size
+                                    </span>
+                                }
+                                @if (item is CafeManagement.Models.Food food)
+                                {
+                                    <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                                        <i class="fas fa-leaf @(food.IsVegetarian ? "text-success" : "text-danger") me-1"></i> @(food.IsVegetarian ? "Vegetarian" : "Non-Veg")
+                                    </span>
+                                    <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                                        <i class="far fa-clock text-muted me-1"></i> @food.PreparationTimeMinutes min
+                                    </span>
+                                }
+                            </div>
+
+                            <button onclick="addToCart(@item.Id)" class="btn btn-coffee w-100 rounded-pill py-3 fw-bold shadow-sm mt-auto">
+                                <i class="fas fa-shopping-basket me-2"></i> ADD TO BASKET
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

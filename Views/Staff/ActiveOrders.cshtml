@@ -1,0 +1,120 @@
+@using CafeManagement.Models.Enums
+@model IEnumerable<CafeManagement.Models.Order>
+@{
+    Layout = "_StaffLayout";
+    ViewData["Title"] = "Active Orders";
+}
+
+<div class="container-fluid py-4">
+    <div class="row g-4">
+        <!-- Pending Column -->
+        <div class="col-xl-4 col-lg-4 col-md-12">
+            <div class="kanban-column bg-light rounded-4 p-4 shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-warning border-3 pb-3">
+                    <h5 class="fw-bold text-warning mb-0"><i class="fas fa-clock me-2"></i> PENDING</h5>
+                    <span class="badge bg-warning text-dark rounded-pill">@Model.Count(o => o.Status == OrderStatus.Pending) Orders</span>
+                </div>
+                <div class="kanban-items" id="col-Pending">
+                    @foreach (var order in Model.Where(o => o.Status == OrderStatus.Pending))
+                    {
+                        <partial name="_OrderCard" model="order" />
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Preparing Column -->
+        <div class="col-xl-4 col-lg-4 col-md-12">
+            <div class="kanban-column bg-light rounded-4 p-4 shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-info border-3 pb-3">
+                    <h5 class="fw-bold text-info mb-0"><i class="fas fa-fire me-2"></i> PREPARING</h5>
+                    <span class="badge bg-info text-white rounded-pill">@Model.Count(o => o.Status == OrderStatus.Preparing) Orders</span>
+                </div>
+                <div class="kanban-items" id="col-Preparing">
+                    @foreach (var order in Model.Where(o => o.Status == OrderStatus.Preparing))
+                    {
+                        <partial name="_OrderCard" model="order" />
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Ready Column -->
+        <div class="col-xl-4 col-lg-4 col-md-12">
+            <div class="kanban-column bg-light rounded-4 p-4 shadow-sm h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-success border-3 pb-3">
+                    <h5 class="fw-bold text-success mb-0"><i class="fas fa-concierge-bell me-2"></i> READY</h5>
+                    <span class="badge bg-success text-white rounded-pill">@Model.Count(o => o.Status == OrderStatus.Ready) Orders</span>
+                </div>
+                <div class="kanban-items" id="col-Ready">
+                    @foreach (var order in Model.Where(o => o.Status == OrderStatus.Ready))
+                    {
+                        <partial name="_OrderCard" model="order" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .kanban-column {
+        min-height: 85vh;
+        background-color: #f1f3f5 !important;
+        transition: all 0.3s ease;
+    }
+    .kanban-column:hover {
+        background-color: #e9ecef !important;
+    }
+    .kanban-items {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .rounded-4 { border-radius: 25px !important; }
+</style>
+
+@section Scripts {
+    <script>
+        function updateStatus(orderId, nextStatus) {
+            const btn = $(`#order-card-${orderId} .status-btn`);
+            const originalHtml = btn.html();
+            btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+
+            $.post('/Staff/UpdateStatus', { orderId: orderId, status: nextStatus }, function(data) {
+                if (data.success) {
+                    const card = $(`#order-card-${orderId}`);
+                    
+                    if (nextStatus === 'Served') {
+                        card.fadeOut(400, function() { $(this).remove(); });
+                    } else {
+                        card.fadeOut(200, function() {
+                            $(`#col-${nextStatus}`).prepend(card);
+                            card.fadeIn(200);
+                            
+                            // Re-enable and update button
+                            btn.prop('disabled', false);
+                            if (nextStatus === 'Preparing') {
+                                btn.attr('onclick', `updateStatus(${orderId}, 'Ready')`)
+                                   .html('Mark as Ready <i class="fas fa-check ms-1"></i>')
+                                   .removeClass('btn-warning').addClass('btn-info text-white');
+                            } else if (nextStatus === 'Ready') {
+                                btn.attr('onclick', `updateStatus(${orderId}, 'Served')`)
+                                   .html('Mark as Served <i class="fas fa-concierge-bell ms-1"></i>')
+                                   .removeClass('btn-info').addClass('btn-success');
+                            }
+                        });
+                    }
+                } else {
+                    btn.html(originalHtml).prop('disabled', false);
+                    Swal.fire('Error', data.message, 'error');
+                }
+            });
+        }
+
+        setInterval(() => {
+            // Keep the data fresh
+            location.reload();
+        }, 45000);
+    </script>
+}

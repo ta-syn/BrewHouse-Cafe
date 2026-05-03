@@ -1,0 +1,338 @@
+@using CafeManagement.Models.Enums
+@model CafeManagement.Models.ViewModels.AddItemViewModel
+@{
+    Layout = "_AdminLayout";
+    bool isEdit = ViewBag.ItemId != null;
+    ViewData["Title"] = isEdit ? "Edit Item" : "Add New Item";
+}
+
+<style>
+    .color-swatch {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid white;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .color-swatch:hover { transform: scale(1.15); }
+    .color-swatch.active { border-color: #333; transform: scale(1.1); }
+</style>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold text-dark">
+                        <i class="fas @(isEdit ? "fa-edit text-info" : "fa-plus-circle text-success") me-2"></i> 
+                        @ViewData["Title"]
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="@(isEdit ? "EditItem" : "AddItem")" asp-route-id="@ViewBag.ItemId" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-3">
+                            <!-- Basic Info -->
+                            <div class="col-md-6">
+                                <label asp-for="ItemType" class="form-label fw-semibold">Item Type</label>
+                                <select asp-for="ItemType" id="itemTypeSelector" class="form-select border-2" disabled="@isEdit" onchange="handleDropdownChange(this, 'newItemTypeContainer')">
+                                    <option value="Beverage">Beverage</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Dessert">Dessert</option>
+                                    <option value="Snack">Snack</option>
+                                    <option value="Add New">+ Add New Type</option>
+                                </select>
+                                <div id="newItemTypeContainer" style="display:none">
+                                    <div class="input-group mt-2">
+                                        <input type="text" id="newItemTypeInput" class="form-control border-2" placeholder="Enter new type..." />
+                                        <button type="button" class="btn btn-success" onclick="confirmNewOption('itemTypeSelector', 'newItemTypeInput', 'newItemTypeContainer')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                @if(isEdit) { <input type="hidden" asp-for="ItemType" /> }
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label fw-semibold">Item Name</label>
+                                <input asp-for="Name" class="form-control border-2" placeholder="e.g. Cappuccino" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Price" class="form-label fw-semibold">Price (৳)</label>
+                                <input asp-for="Price" type="number" step="0.01" class="form-control border-2" />
+                                <span asp-validation-for="Price" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Category" class="form-label fw-semibold">Category Display</label>
+                                <select asp-for="Category" id="categorySelector" class="form-select border-2" onchange="handleDropdownChange(this, 'newCategoryContainer')">
+                                    @{
+                                         var existingCategories = ViewBag.Categories as List<string> ?? new List<string>();
+                                         var defaultCats = new[] { "Beverage", "Food", "Dessert", "Snack", "Special" };
+                                         var allCats = existingCategories.Union(defaultCats).Distinct().ToList();
+                                         
+                                         foreach (var cat in allCats) {
+                                             <option value="@cat">@cat</option>
+                                         }
+                                     }
+                                     <option value="Add New">+ Add New Category</option>
+                                 </select>
+                                <div id="newCategoryContainer" style="display:none">
+                                    <div class="input-group mt-2">
+                                        <input type="text" id="newCategoryInput" class="form-control border-2" placeholder="Enter new category..." />
+                                        <button type="button" class="btn btn-success" onclick="confirmNewOption('categorySelector', 'newCategoryInput', 'newCategoryContainer')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="colorSelectorContainer" class="mt-3">
+                                    <label class="form-label small fw-bold text-muted mb-2">Category Badge Color</label>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @{
+                                            var colors = new[] { 
+                                                ("#6F4E37", "Coffee"), ("#D4A574", "Tan"), ("#2C1810", "Dark"), 
+                                                ("#C8860A", "Gold"), ("#198754", "Green"), ("#dc3545", "Red"),
+                                                ("#0dcaf0", "Cyan"), ("#6610f2", "Indigo"), ("#fd7e14", "Orange")
+                                            };
+                                            foreach (var (hex, name) in colors) {
+                                                <div class="color-swatch @(Model.CategoryColor == hex ? "active" : "")" 
+                                                     style="background-color:@hex;" 
+                                                     onclick="setCategoryColor('@hex', this)"
+                                                     title="@name"></div>
+                                            }
+                                        }
+                                        <input type="color" id="customColorPicker" class="form-control form-control-color border-0 p-0" style="width:32px; height:32px; border-radius:50%;" oninput="setCategoryColor(this.value, this)" value="@Model.CategoryColor" />
+                                    </div>
+                                    <input type="hidden" asp-for="CategoryColor" id="categoryColorInput" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="ImageFile" class="form-label fw-semibold">Upload Product Image</label>
+                                <input asp-for="ImageFile" type="file" class="form-control border-2" accept="image/*" />
+                                <small class="text-muted">High quality images look best on the menu.</small>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                                <textarea asp-for="Description" class="form-control border-2" rows="3" placeholder="Tell customers about this item..."></textarea>
+                            </div>
+
+                            <!-- Dynamic Fields: Beverage -->
+                            <div id="fields-Beverage" class="type-fields row g-3 mt-1" style="display:none">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch p-3 bg-light rounded-3">
+                                        <input asp-for="IsHot" class="form-check-input ms-0 me-3" type="checkbox">
+                                        <label asp-for="IsHot" class="form-check-label fw-semibold">Served Hot?</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Size" class="form-label fw-semibold">Standard Size</label>
+                                    <select asp-for="Size" class="form-select border-2">
+                                        <option value="Small">Small</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Large">Large</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Fields: Food -->
+                            <div id="fields-Food" class="type-fields row g-3 mt-1" style="display:none">
+                                <div class="col-md-6">
+                                    <label asp-for="PreparationTimeMinutes" class="form-label fw-semibold">Prep Time (Mins)</label>
+                                    <input asp-for="PreparationTimeMinutes" class="form-control border-2" />
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch p-3 bg-light rounded-3">
+                                        <input asp-for="IsVegetarian" class="form-check-input ms-0 me-3" type="checkbox">
+                                        <label asp-for="IsVegetarian" class="form-check-label fw-semibold">Vegetarian?</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Fields: Dessert -->
+                            <div id="fields-Dessert" class="type-fields row g-3 mt-1" style="display:none">
+                                <div class="col-md-8">
+                                    <label asp-for="Allergens" class="form-label fw-semibold">Allergens</label>
+                                    <input asp-for="Allergens" class="form-control border-2" placeholder="e.g. Nuts, Dairy, Gluten" />
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch p-3 bg-light rounded-3">
+                                        <input asp-for="IsSeasonalItem" class="form-check-input ms-0 me-3" type="checkbox">
+                                        <label asp-for="IsSeasonalItem" class="form-check-label fw-semibold">Seasonal?</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check form-switch p-3 bg-light rounded-3 mt-2">
+                                    <input asp-for="IsAvailable" class="form-check-input ms-0 me-3" type="checkbox">
+                                    <label asp-for="IsAvailable" class="form-check-label fw-semibold">Available for Sale</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4 pt-4 border-top">
+                            <button type="submit" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">
+                                <i class="fas fa-save me-1"></i> @(isEdit ? "Update Item" : "Create Item")
+                            </button>
+                            <a asp-action="MenuList" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updateFields() {
+            const type = $('#itemTypeSelector').val();
+            $('.type-fields').hide();
+            
+            if (type === "Add New") {
+                $('#newItemTypeContainer').fadeIn();
+            } else {
+                $('#newItemTypeContainer').hide();
+                $('#fields-' + type).fadeIn();
+            }
+        }
+
+        function handleDropdownChange(select, containerId) {
+            if (select.value === "Add New") {
+                $('#' + containerId).fadeIn();
+            } else {
+                $('#' + containerId).hide();
+                if (select.id === 'categorySelector') {
+                    updateCategory();
+                }
+            }
+        }
+
+        function confirmNewOption(selectId, inputId, containerId) {
+            const newVal = $('#' + inputId).val().trim();
+            if (newVal) {
+                const $select = $('#' + selectId);
+                // Check if already exists
+                if ($select.find(`option[value="${newVal}"]`).length === 0) {
+                    $select.prepend(`<option value="${newVal}">${newVal}</option>`);
+                }
+                $select.val(newVal);
+                $('#' + containerId).hide();
+                $('#' + inputId).val('');
+                
+                if (selectId === 'categorySelector') {
+                    updateCategory();
+                } else if (selectId === 'itemTypeSelector') {
+                    updateFields();
+                }
+            }
+        }
+
+        const categoryColors = @Html.Raw(Json.Serialize(ViewBag.CategoryColors));
+
+        function updateCategory() {
+            const category = $('#categorySelector').val();
+            if (category === "Add New") {
+                $('#newCategoryContainer').fadeIn();
+                $('#btnDeleteCategory').hide();
+            } else {
+                $('#newCategoryContainer').hide();
+                // Show delete button for existing categories
+                if (category) {
+                    $('#btnDeleteCategory').fadeIn();
+                } else {
+                    $('#btnDeleteCategory').hide();
+                }
+
+                // Auto-select color if it exists for this category
+                if (categoryColors && categoryColors[category]) {
+                    setCategoryColor(categoryColors[category], null);
+                    // Also find and highlight the matching swatch
+                    $('.color-swatch').each(function() {
+                        const swatchColor = rgb2hex($(this).css('background-color')).toUpperCase();
+                        const targetColor = categoryColors[category].toUpperCase();
+                        if (swatchColor === targetColor) {
+                            $(this).addClass('active');
+                        } else {
+                            $(this).removeClass('active');
+                        }
+                    });
+                }
+            }
+        }
+
+        function confirmDeleteCategory() {
+            const category = $('#categorySelector').val();
+            if (!category || category === "Add New") return;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `This will delete ALL items in the '${category}' category! This cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete all!',
+                cancelButtonText: 'Cancel',
+                background: '#fff',
+                borderRadius: '15px'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/Admin/DeleteCategory';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'category';
+                    input.value = category;
+                    
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+        function rgb2hex(rgb) {
+            if (!rgb) return "#000000";
+            if (/^#[0-9A-F]{6}$/i.test(rgb)) return rgb;
+            rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            if (!rgb) return "#000000";
+            function hex(x) { return ("0" + parseInt(x).toString(16)).slice(-2); }
+            return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+        }
+
+        function setCategoryColor(hex, el) {
+            $('#categoryColorInput').val(hex);
+            $('#customColorPicker').val(hex);
+            if (el) {
+                $('.color-swatch').removeClass('active');
+                if (el.classList.contains('color-swatch')) {
+                    $(el).addClass('active');
+                }
+            }
+        }
+
+        function setEmoji(emoji) {
+            $('#emojiInput').val(emoji);
+            $('#emojiPreview').text(emoji);
+        }
+
+        $(document).ready(function() {
+            updateFields();
+            updateCategory();
+            $('#itemTypeSelector').on('change', updateFields);
+            // categorySelector onchange is handled by inline onchange call
+        });
+    </script>
+}

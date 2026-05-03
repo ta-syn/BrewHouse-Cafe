@@ -1,0 +1,65 @@
+@using CafeManagement.Models.Enums
+@model IEnumerable<CafeManagement.Models.CafeTable>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Table Management";
+}
+
+<div class="container-fluid">
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white border-0 py-3">
+            <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-chair text-brown me-2"></i> Table Layout</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                @foreach (var table in Model)
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        @{
+                            var statusColor = table.Status switch {
+                                TableStatus.Available => "border-success bg-success-subtle",
+                                TableStatus.Occupied => "border-danger bg-danger-subtle",
+                                TableStatus.Reserved => "border-warning bg-warning-subtle",
+                                _ => "border-secondary bg-light"
+                            };
+                            var iconColor = table.Status switch {
+                                TableStatus.Available => "text-success",
+                                TableStatus.Occupied => "text-danger",
+                                TableStatus.Reserved => "text-warning",
+                                _ => "text-secondary"
+                            };
+                        }
+                        <div class="card @statusColor border-2 h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-chair fa-3x @iconColor"></i>
+                                </div>
+                                <h4 class="fw-bold mb-1">Table @table.TableNumber</h4>
+                                <p class="text-muted small mb-3">Capacity: @table.Capacity Persons</p>
+                                
+                                <form asp-action="UpdateTableStatus" method="post">
+                                    <input type="hidden" name="id" value="@table.Id" />
+                                    <div class="input-group input-group-sm">
+                                        <select name="status" class="form-select border-0 shadow-none" onchange="this.form.submit()">
+                                            @foreach (var status in Enum.GetValues<TableStatus>())
+                                            {
+                                                <option value="@status" selected="@(table.Status == status)">@status</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-brown { color: #2C1810; }
+    .bg-success-subtle { background-color: #e8f5e9; }
+    .bg-danger-subtle { background-color: #ffebee; }
+    .bg-warning-subtle { background-color: #fff8e1; }
+</style>

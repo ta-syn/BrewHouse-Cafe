@@ -1,0 +1,181 @@
+@model List<CafeManagement.Models.MenuItem>
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Premium Cafe Experience";
+}
+
+<style>
+    .hero-gradient {
+        background: linear-gradient(135deg, rgba(44, 24, 16, 0.9) 0%, rgba(78, 52, 46, 0.7) 100%), 
+                    url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    .floating-card {
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .floating-card:hover {
+        transform: translateY(-15px);
+    }
+    .icon-box {
+        width: 80px;
+        height: 80px;
+        background: rgba(212, 165, 116, 0.1);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
+    }
+    .icon-box i { color: #4e342e; font-size: 2rem; }
+    .feature-item:hover .icon-box {
+        background: #4e342e;
+    }
+    .feature-item:hover .icon-box i {
+        color: #fff;
+    }
+    .bg-price-tag {
+        background: #D4A574;
+        color: #2C1810 !important;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section hero-gradient py-5 d-flex align-items-center" style="min-height: 90vh;">
+    <div class="container text-center py-5">
+        <div class="badge bg-coffee-light text-brown px-3 py-2 rounded-pill mb-4 animate__animated animate__fadeInDown">SINCE 2026 • THE FINEST BREW</div>
+        <h1 class="display-1 fw-bold text-white mb-4 animate__animated animate__fadeInUp">Elevate Your <span class="text-coffee-light">Coffee</span> Experience</h1>
+        <p class="fs-4 text-white opacity-75 mb-5 mx-auto animate__animated animate__fadeInUp animate__delay-1s" style="max-width: 800px;">Indulge in artisanal blends, gourmet delicacies, and a sophisticated atmosphere designed for true connoisseurs.</p>
+        <div class="d-flex justify-content-center gap-4 animate__animated animate__fadeInUp animate__delay-2s">
+            <a asp-action="Menu" class="btn btn-coffee btn-lg px-5 py-3 fs-5 rounded-pill shadow-lg">
+                Explore Our Menu <i class="fas fa-utensils ms-2"></i>
+            </a>
+            @if(Context.Session.GetString("UserId") != null)
+            {
+                <button onclick="showAlreadyMemberMsg()" class="btn btn-outline-light btn-lg px-5 py-3 fs-5 rounded-pill">
+                    Join Our Community
+                </button>
+            }
+            else
+            {
+                <a asp-controller="Auth" asp-action="Register" class="btn btn-outline-light btn-lg px-5 py-3 fs-5 rounded-pill">
+                    Join Our Community
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container py-5 mt-5">
+    <div class="row g-5">
+        <div class="col-md-4 feature-item text-center">
+            <div class="icon-box mx-auto">
+                <i class="fas fa-coffee"></i>
+            </div>
+            <h4 class="fw-bold">Artisan Roasts</h4>
+            <p class="text-muted">Specially sourced single-origin beans roasted to perfection by our master baristas.</p>
+        </div>
+        <div class="col-md-4 feature-item text-center">
+            <div class="icon-box mx-auto">
+                <i class="fas fa-cookie-bite"></i>
+            </div>
+            <h4 class="fw-bold">Gourmet Snacks</h4>
+            <p class="text-muted">Freshly baked pastries and savory delights prepared daily with premium ingredients.</p>
+        </div>
+        <div class="col-md-4 feature-item text-center">
+            <div class="icon-box mx-auto">
+                <i class="fas fa-leaf"></i>
+            </div>
+            <h4 class="fw-bold">Ethical Sourcing</h4>
+            <p class="text-muted">We take pride in supporting sustainable farming and direct-trade partnerships.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Products -->
+<div class="bg-light-subtle py-5 mt-5">
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2 class="display-4 fw-bold text-coffee">Chef's Recommendations</h2>
+                <p class="text-muted">Our most loved signature items</p>
+            </div>
+            <a asp-action="Menu" class="btn btn-outline-dark rounded-pill px-4 fw-bold mb-2">View All Menu <i class="fas fa-chevron-right ms-2"></i></a>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var item in Model.Take(3))
+            {
+                <div class="col-lg-4">
+                    <div class="card floating-card border-0 shadow-lg rounded-4 overflow-hidden h-100">
+                        <div class="position-relative" style="height: 300px;">
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" class="w-100 h-100 object-fit-cover" alt="@item.Name">
+                            }
+                            else
+                            {
+                                <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light text-muted display-1">@item.ImageEmoji</div>
+                            }
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-price-tag text-dark rounded-pill px-3 py-2 fw-bold shadow-sm">৳@item.Price</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-2">@item.Name</h4>
+                            <p class="text-muted small mb-4">@item.Description</p>
+                            <button onclick="addToCart(@item.Id)" class="btn btn-coffee w-100 rounded-pill py-2">
+                                <i class="fas fa-plus-circle me-2"></i> Quick Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="container py-5 my-5">
+    <div class="cta-banner rounded-5 p-5 text-center text-white shadow-lg overflow-hidden position-relative d-flex align-items-center justify-content-center" style="min-height: 400px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/images/landing/cta_bg.png'); background-size: cover; background-position: center; background-attachment: fixed;">
+        <div class="position-relative z-1 py-4">
+            <h2 class="display-3 fw-bold mb-4 display-font">Ready to taste the <span class="text-coffee-light">excellence?</span></h2>
+            <p class="fs-4 opacity-75 mb-5 mx-auto" style="max-width: 700px;">Visit us today or order online for a seamless experience. Your perfect cup of coffee is just a few clicks away.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a asp-action="Menu" class="btn btn-coffee btn-lg px-5 py-3 fs-5 rounded-pill shadow-lg hover-scale">
+                    ORDER ONLINE NOW <i class="fas fa-shopping-cart ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cta-banner { transition: all 0.5s ease; }
+    .display-font { font-family: 'Playfair Display', serif; }
+    .text-coffee-light { color: #D4A574; }
+    .hover-scale { transition: transform 0.3s ease; }
+    .hover-scale:hover { transform: scale(1.05); }
+</style>
+@section Scripts {
+    <script>
+        function showAlreadyMemberMsg() {
+            Swal.fire({
+                title: 'Already a Member!',
+                text: 'You are already a valued member of our coffee community. Thank you for your continued support! ☕✨',
+                icon: 'info',
+                confirmButtonColor: '#2C1810',
+                confirmButtonText: 'Great!',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            });
+        }
+    </script>
+}

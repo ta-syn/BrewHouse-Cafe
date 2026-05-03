@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cafe Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/site.css" rel="stylesheet">
+</head>
+<body>
+    <div id="wrapper" class="d-flex">
+        <nav class="sidebar">
+            <div class="sidebar-brand">☕ Cafe Admin</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Dashboard" ? "active" : "")" asp-controller="Admin" asp-action="Dashboard">
+                        <i class="fas fa-coffee"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "MenuList" ? "active" : "")" asp-controller="Admin" asp-action="MenuList">
+                        <i class="fas fa-utensils"></i> Menu Items
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "AllOrders" ? "active" : "")" asp-controller="Admin" asp-action="AllOrders">
+                        <i class="fas fa-clipboard-list"></i> All Orders
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "StaffList" ? "active" : "")" asp-controller="Admin" asp-action="StaffList">
+                        <i class="fas fa-users"></i> Staff
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "TableList" ? "active" : "")" asp-controller="Admin" asp-action="TableList">
+                        <i class="fas fa-chair"></i> Tables
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-warning" asp-controller="Staff" asp-action="Dashboard">
+                        <i class="fas fa-exchange-alt"></i> Staff Panel
+                    </a>
+                </li>
+                <div class="mt-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">
+                            <i class="fas fa-home"></i> Back to Site
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" asp-controller="Auth" asp-action="Logout">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                    <li class="nav-item mt-3 pt-3 border-top border-secondary border-opacity-25">
+                        <div class="user-info-pill-sidebar px-3 py-2 rounded-3 bg-white bg-opacity-10 mx-2 mb-2 text-center">
+                            <span class="text-white-50 small d-block mb-1" style="line-height: 1;">Logged in as</span>
+                            <span class="fw-bold text-white">@Context.Session.GetString("UserName")</span>
+                        </div>
+                    </li>
+                </div>
+            </ul>
+        </nav>
+
+        <div class="main-content w-100">
+            @await Html.PartialAsync("_Alert")
+            <header class="d-flex justify-content-between align-items-center mb-4 pb-2">
+                <div class="d-flex align-items-center">
+                    <button id="sidebar-toggle" class="btn btn-sm btn-outline-dark d-md-none me-3">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h3 class="mb-0 fw-bold"></h3>
+                </div>
+            </header>
+
+            @RenderBody()
+        </div>
+    </div>
+
+    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index:9999"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/site.js?v=@DateTime.Now.Ticks"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

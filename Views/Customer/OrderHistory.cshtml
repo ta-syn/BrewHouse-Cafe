@@ -1,0 +1,82 @@
+@using CafeManagement.Models.Enums
+@model IEnumerable<CafeManagement.Models.Order>
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h2 class="display-5 fw-bold text-coffee mb-5">My Order History</h2>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+                    <i class="fas fa-history fa-5x text-muted mb-4 opacity-25"></i>
+                    <h3 class="fw-bold">No orders yet</h3>
+                    <p class="text-muted mb-4">Your delicious orders will appear here.</p>
+                    <a asp-controller="Home" asp-action="Menu" class="btn btn-coffee rounded-pill px-5">Explore Menu</a>
+                </div>
+            }
+            else
+            {
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3 border-0">Order ID</th>
+                                    <th class="py-3 border-0">Date</th>
+                                    <th class="py-3 border-0">Total</th>
+                                    <th class="py-3 border-0 text-center">Status</th>
+                                    <th class="text-end pe-4 py-3 border-0">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <span class="fw-bold text-muted">#@order.Id</span>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold text-dark">@order.CreatedAt.ToString("MMM dd, yyyy")</div>
+                                            <div class="small text-muted">@order.CreatedAt.ToString("hh:mm tt")</div>
+                                        </td>
+                                        <td class="fw-bold text-coffee">৳@order.TotalAmount</td>
+                                        <td class="text-center">
+                                            @{
+                                                var statusConfig = order.Status switch {
+                                                    OrderStatus.Pending => new { Bg = "#fff3e0", Color = "#ed6c02", Icon = "fa-clock" },
+                                                    OrderStatus.Preparing => new { Bg = "#e1f5fe", Color = "#0288d1", Icon = "fa-fire" },
+                                                    OrderStatus.Ready => new { Bg = "#e8f5e9", Color = "#2e7d32", Icon = "fa-bell" },
+                                                    OrderStatus.Served => new { Bg = "#f3e5f5", Color = "#7b1fa2", Icon = "fa-check-double" },
+                                                    OrderStatus.Cancelled => new { Bg = "#ffebee", Color = "#d32f2f", Icon = "fa-times" },
+                                                    _ => new { Bg = "#f5f5f5", Color = "#616161", Icon = "fa-question" }
+                                                };
+                                            }
+                                            <span class="badge rounded-pill px-3 py-2" style="background-color: @statusConfig.Bg; color: @statusConfig.Color; min-width: 100px;">
+                                                <i class="fas @statusConfig.Icon me-1"></i> @order.Status
+                                            </span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <a asp-action="TrackOrder" asp-route-id="@order.Id" class="btn btn-sm btn-outline-coffee rounded-pill px-3">
+                                                    <i class="fas fa-map-marker-alt me-1"></i> Track
+                                                </a>
+                                                <a asp-action="OrderDetail" asp-route-id="@order.Id" class="btn btn-sm btn-coffee rounded-pill px-3">
+                                                    Details
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,157 @@
+@using CafeManagement.Models.Enums
+@model IEnumerable<CafeManagement.Models.Order>
+@{
+    Layout = "_StaffLayout";
+    ViewData["Title"] = "Staff Dashboard";
+}
+
+<div class="container-fluid p-0">
+    <!-- Stat Cards -->
+    <div class="row g-4 mb-5">
+        <!-- Dual Stat Card: Orders -->
+        <div class="col-md-6">
+            <div class="stat-card-dual bg-premium-coffee h-100 shadow-lg">
+                <div class="stat-icon-bg"><i class="fas fa-shopping-bag"></i></div>
+                <div class="row align-items-center h-100 position-relative z-1">
+                    <div class="col-6 border-end border-white border-opacity-10 py-2">
+                        <div class="stat-label-sm">Today's Orders</div>
+                        <div class="stat-value-lg">@ViewBag.TodayCount</div>
+                    </div>
+                    <div class="col-6 py-2">
+                        <div class="stat-label-sm">Total Orders</div>
+                        <div class="stat-value-lg text-amber">@ViewBag.TotalCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dual Stat Card: Status & Revenue -->
+        <div class="col-md-6">
+            <div class="stat-card-dual bg-premium-dark h-100 shadow-lg">
+                <div class="stat-icon-bg"><i class="fas fa-money-bill-wave"></i></div>
+                <div class="row align-items-center h-100 position-relative z-1">
+                    <div class="col-6 border-end border-white border-opacity-10 py-2">
+                        <div class="stat-label-sm">Pending Orders</div>
+                        <div class="stat-value-lg text-danger">@ViewBag.PendingCount</div>
+                    </div>
+                    <div class="col-6 py-2">
+                        <div class="stat-label-sm">Today's Revenue</div>
+                        <div class="stat-value-lg text-success">৳@ViewBag.TodayRevenue</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Priority Orders Table -->
+    <div class="premium-table-container">
+        <div class="d-flex justify-content-between align-items-center mb-4 px-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-tasks text-coffee me-2"></i> Priority Orders</h5>
+            <span class="badge bg-light text-dark rounded-pill border py-2 px-3">Last updated: @DateTime.Now.ToString("t")</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table premium-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Customer</th>
+                        <th>Wait Time</th>
+                        <th>Items</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.OrderBy(o => o.CreatedAt))
+                    {
+                        var timeElapsed = DateTime.UtcNow.AddHours(6) - order.CreatedAt;
+                        var isUrgent = timeElapsed.TotalMinutes > 15 && order.Status == OrderStatus.Pending;
+                        <tr class="@(isUrgent ? "table-danger" : "")">
+                            <td class="ps-4 fw-bold text-coffee">#@order.Id</td>
+                            <td>
+                                <div class="fw-bold">@(order.IsWalkIn ? order.CustomerName : order.User?.Name)</div>
+                                @if (order.TableId.HasValue)
+                                {
+                                    <span class="badge bg-dark rounded-pill" style="font-size: 0.65rem;">
+                                        <i class="fas fa-chair me-1"></i>T-@order.Table?.TableNumber
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <span class="@(isUrgent ? "text-danger fw-bold" : "text-muted")">
+                                    <i class="far fa-clock me-1"></i> @(Math.Floor(timeElapsed.TotalMinutes)) mins ago
+                                </span>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">@order.OrderItems.Count items</span></td>
+                            <td>
+                                <span class="badge rounded-pill @(order.Status == OrderStatus.Pending ? "bg-warning text-dark" : "bg-info") py-2 px-3">
+                                    @order.Status
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a asp-action="ActiveOrders" class="btn btn-sm btn-coffee rounded-pill px-4">Manage</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stat-card-dual {
+        padding: 2rem;
+        border-radius: 24px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .stat-card-dual:hover { transform: translateY(-8px); }
+    .bg-premium-dark { background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); }
+    .bg-premium-coffee { background: linear-gradient(135deg, #2C1810 0%, #4e342e 100%); }
+    .stat-label-sm {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        opacity: 0.7;
+        margin-bottom: 0.5rem;
+    }
+    .stat-value-lg {
+        font-size: 2.2rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+    .text-amber { color: #D4A574; }
+    .stat-icon-bg {
+        position: absolute;
+        right: -20px;
+        bottom: -20px;
+        font-size: 8rem;
+        opacity: 0.05;
+        transform: rotate(-15deg);
+    }
+    .premium-table-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        padding: 1.5rem;
+    }
+    .premium-table thead th {
+        background: #f8f9fa;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        color: #888;
+        padding: 1rem 0.5rem;
+        border: none;
+    }
+    .premium-table tbody td {
+        padding: 1.2rem 0.5rem;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    .text-coffee { color: #4e342e; }
+    .btn-coffee { background: #4e342e; color: white; border: none; }
+    .btn-coffee:hover { background: #3e2723; color: white; }
+</style>

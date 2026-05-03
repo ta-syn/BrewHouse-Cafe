@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BrewHouse Cafe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link href="/css/site.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">☕ BrewHouse Cafe</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Menu" ? "active" : "")" asp-controller="Home" asp-action="Menu">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "About" ? "active" : "")" asp-controller="Home" asp-action="About">About</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <a asp-controller="Cart" asp-action="ViewCart" class="position-relative me-4 text-dark text-decoration-none">
+                        <i class="fas fa-shopping-cart fa-lg"></i>
+                        <span id="cart-count" class="cart-badge">0</span>
+                    </a>
+
+                    @if (Context.Session.GetString("UserId") != null)
+                    {
+                        <div class="dropdown">
+                            <a href="#" class="text-dark text-decoration-none dropdown-toggle fw-bold" id="userMenu" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i> @Context.Session.GetString("UserName")
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                @if (Context.Session.GetString("UserRole") == "Admin")
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="Dashboard"><i class="fas fa-cog me-2"></i> Admin Panel</a></li>
+                                }
+                                <li><a class="dropdown-item" asp-controller="Customer" asp-action="Profile"><i class="fas fa-user me-2"></i> My Profile</a></li>
+                                <li><a class="dropdown-item" asp-controller="Customer" asp-action="OrderHistory"><i class="fas fa-history me-2"></i> Order History</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-controller="Auth" asp-action="Logout"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-secondary btn-sm rounded-pill px-3 me-2">Login</a>
+                        <a asp-controller="Auth" asp-action="Register" class="btn btn-coffee btn-sm">Join Now</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main role="main">
+        <div class="container mt-4">
+            @await Html.PartialAsync("_Alert")
+        </div>
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4 col-md-12">
+                    <h4 class="mb-4">☕ BrewHouse Cafe</h4>
+                    <p class="opacity-75" style="max-width: 400px;">Experience the art of coffee making. We use hand-picked beans roasted to perfection to ensure every cup is a masterpiece.</p>
+                    <div class="social-links mt-4">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 text-lg-center">
+                    <h4 class="mb-4">Quick Links</h4>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-controller="Home" asp-action="Menu">Our Menu</a></li>
+                        <li><a asp-controller="Cart" asp-action="ViewCart">View Cart</a></li>
+                        <li><a asp-controller="Home" asp-action="About">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6 text-lg-end">
+                    <h4 class="mb-4">Contact Us</h4>
+                    <div class="contact-info">
+                        <p class="mb-3"><i class="fas fa-map-marker-alt me-2 text-secondary"></i> 123 Coffee Lane, Dhaka, Bangladesh</p>
+                        <p class="mb-3"><i class="fas fa-phone-alt me-2 text-secondary"></i> +880 1234 567890</p>
+                        <p class="mb-0"><i class="fas fa-envelope me-2 text-secondary"></i> hello@brewhouse.com</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; @DateTime.Now.Year BrewHouse Cafe Management. All rights reserved. Designed with ❤️ for coffee lovers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index:9999"></div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/site.js?v=@DateTime.Now.Ticks"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

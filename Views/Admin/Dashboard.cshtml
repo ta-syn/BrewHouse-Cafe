@@ -1,0 +1,218 @@
+@using CafeManagement.Models.ViewModels
+@using CafeManagement.Models.Enums
+@model AdminDashboardViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid p-0">
+    <div class="row g-4 mb-5">
+        <!-- Dual Stat Card: Revenue -->
+        <div class="col-md-6">
+            <div class="stat-card-dual bg-premium-dark h-100 shadow-lg">
+                <div class="stat-icon-bg"><i class="fas fa-sack-dollar"></i></div>
+                <div class="row align-items-center h-100 position-relative z-1">
+                    <div class="col-6 border-end border-white border-opacity-10 py-2">
+                        <div class="stat-label-sm">Today's Revenue</div>
+                        <div class="stat-value-lg">৳@Model.TodayRevenue</div>
+                    </div>
+                    <div class="col-6 py-2">
+                        <div class="stat-label-sm">Total Revenue</div>
+                        <div class="stat-value-lg text-amber">৳@Model.TotalRevenue</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dual Stat Card: Orders -->
+        <div class="col-md-6">
+            <div class="stat-card-dual bg-premium-coffee h-100 shadow-lg">
+                <div class="stat-icon-bg"><i class="fas fa-shopping-basket"></i></div>
+                <div class="row align-items-center h-100 position-relative z-1">
+                    <div class="col-6 border-end border-white border-opacity-10 py-2">
+                        <div class="stat-label-sm">Today's Orders</div>
+                        <div class="stat-value-lg">@Model.TodayOrders</div>
+                    </div>
+                    <div class="col-6 py-2">
+                        <div class="stat-label-sm">Total Orders</div>
+                        <div class="stat-value-lg text-amber">@Model.TotalOrders</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Popular Items -->
+        <div class="col-lg-5">
+            <div class="premium-table-container h-100">
+                <div class="card-header bg-white border-0 py-3 mb-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-fire text-danger me-2"></i> Popular Items</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table premium-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-3">Item</th>
+                                <th class="text-center">Orders</th>
+                                <th class="text-end pe-3">Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.PopularItems)
+                            {
+                                <tr>
+                                    <td class="ps-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3 rounded-2 overflow-hidden bg-light shadow-sm" style="width: 36px; height: 36px;">
+                                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                                {
+                                                    <img src="@item.ImageUrl" class="w-100 h-100 object-fit-cover" alt="@item.ItemName">
+                                                }
+                                                else
+                                                {
+                                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-white" style="font-size: 1.2rem;">@item.ImageEmoji</div>
+                                                }
+                                            </div>
+                                            <span class="fw-bold text-coffee">@item.ItemName</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center fw-bold">@item.TotalOrdered</td>
+                                    <td class="text-end pe-3 fw-bold text-coffee">৳@item.TotalRevenue</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="col-lg-7">
+            <div class="premium-table-container h-100">
+                <div class="card-header bg-white border-0 py-3 mb-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-clock text-primary me-2"></i> Recent Orders</h5>
+                    <a asp-action="AllOrders" class="btn btn-sm btn-coffee rounded-pill px-3">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table premium-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-3">Order</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-end pe-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td class="ps-3 fw-bold text-coffee">#@order.Id</td>
+                                    <td>
+                                        <div class="fw-bold">
+                                            @(order.IsWalkIn ? order.CustomerName : order.User?.Name)
+                                            @if(order.TableId.HasValue) {
+                                                <span class="badge bg-light text-dark border ms-1" style="font-size: 0.65rem;">T-@order.Table?.TableNumber</span>
+                                            }
+                                        </div>
+                                        <small class="text-muted"><i class="far fa-clock me-1"></i> @order.CreatedAt.ToString("g")</small>
+                                    </td>
+                                    <td class="fw-bold">৳@order.TotalAmount</td>
+                                    <td>
+                                        @{
+                                            var badgeClass = order.Status switch {
+                                                OrderStatus.Pending => "bg-warning text-dark",
+                                                OrderStatus.Preparing => "bg-info text-white",
+                                                OrderStatus.Ready => "bg-primary text-white",
+                                                OrderStatus.Served => "bg-success text-white",
+                                                OrderStatus.Cancelled => "bg-danger text-white",
+                                                _ => "bg-secondary text-white"
+                                            };
+                                        }
+                                        <div class="d-flex flex-column align-items-center py-1" style="min-width: 100px;">
+                                            <span class="badge @badgeClass rounded-pill py-2 px-3 w-100 shadow-sm mb-1">@order.Status</span>
+                                            
+                                            @if(order.Status == OrderStatus.Served) {
+                                                <div class="bg-success text-white rounded-2 px-2 py-1 shadow-sm mt-1" style="font-size: 0.75rem; font-weight: 800;">
+                                                    <i class="fas fa-chair me-1"></i>T-@(order.Table?.TableNumber.ToString() ?? order.TableId?.ToString() ?? "N/A")
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <a asp-action="OrderDetail" asp-route-id="@order.Id" class="btn btn-sm btn-light border rounded-pill px-3">
+                                            <i class="fas fa-eye text-coffee"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .stat-card-dual {
+        padding: 2rem;
+        border-radius: 24px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .stat-card-dual:hover { transform: translateY(-8px); }
+    .bg-premium-dark { background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); }
+    .bg-premium-coffee { background: linear-gradient(135deg, #2C1810 0%, #4e342e 100%); }
+    .stat-label-sm {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        opacity: 0.7;
+        margin-bottom: 0.5rem;
+    }
+    .stat-value-lg {
+        font-size: 2.2rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+    .text-amber { color: #D4A574; }
+    .stat-icon-bg {
+        position: absolute;
+        right: -20px;
+        bottom: -20px;
+        font-size: 8rem;
+        opacity: 0.05;
+        transform: rotate(-15deg);
+    }
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+    }
+    .premium-table-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        padding: 1.5rem;
+    }
+    .premium-table thead th {
+        background: #f8f9fa;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        color: #888;
+        padding: 1rem 0.5rem;
+        border: none;
+    }
+    .premium-table tbody td {
+        padding: 1.2rem 0.5rem;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    .text-coffee { color: #4e342e; }
+    .btn-coffee { background: #4e342e; color: white; border: none; }
+    .btn-coffee:hover { background: #3e2723; color: white; }
+</style>

@@ -1,0 +1,365 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/css/site.css",
+      "PackagePath": "staticwebassets/css/site.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/favicon.ico",
+      "PackagePath": "staticwebassets/favicon.ico"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/auth/login_bg.png",
+      "PackagePath": "staticwebassets/images/auth/login_bg.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/landing/cta_bg.png",
+      "PackagePath": "staticwebassets/images/landing/cta_bg.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/088a1e14-68dd-4931-9fe8-10ee2459e380.jpeg",
+      "PackagePath": "staticwebassets/images/menu/088a1e14-68dd-4931-9fe8-10ee2459e380.jpeg"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/0a3a8947-eb55-4027-a5c8-4ab7d1ab84b4.jpg",
+      "PackagePath": "staticwebassets/images/menu/0a3a8947-eb55-4027-a5c8-4ab7d1ab84b4.jpg"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/482cbc2d-b724-4e66-87a7-504a63154b3f.jpeg",
+      "PackagePath": "staticwebassets/images/menu/482cbc2d-b724-4e66-87a7-504a63154b3f.jpeg"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/668e32fd-466d-462e-9d77-f8db7bfc8d84.jpg",
+      "PackagePath": "staticwebassets/images/menu/668e32fd-466d-462e-9d77-f8db7bfc8d84.jpg"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/beverages/Caramel Macchiato.png",
+      "PackagePath": "staticwebassets/images/menu/beverages/Caramel Macchiato.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/beverages/Espresso.png",
+      "PackagePath": "staticwebassets/images/menu/beverages/Espresso.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/beverages/Hot Chocolate.png",
+      "PackagePath": "staticwebassets/images/menu/beverages/Hot Chocolate.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/beverages/Matcha Latte.png",
+      "PackagePath": "staticwebassets/images/menu/beverages/Matcha Latte.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/desserts/Blueberry Cheesecake.png",
+      "PackagePath": "staticwebassets/images/menu/desserts/Blueberry Cheesecake.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/desserts/Brownie with Ice Cream.png",
+      "PackagePath": "staticwebassets/images/menu/desserts/Brownie with Ice Cream.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/desserts/Macarons Box.png",
+      "PackagePath": "staticwebassets/images/menu/desserts/Macarons Box.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/desserts/Tiramisu.png",
+      "PackagePath": "staticwebassets/images/menu/desserts/Tiramisu.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/food/Avocado Toast.png",
+      "PackagePath": "staticwebassets/images/menu/food/Avocado Toast.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/food/Club Sandwich.png",
+      "PackagePath": "staticwebassets/images/menu/food/Club Sandwich.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/food/Grilled Chicken Burger.png",
+      "PackagePath": "staticwebassets/images/menu/food/Grilled Chicken Burger.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/food/Pasta Alfredo.png",
+      "PackagePath": "staticwebassets/images/menu/food/Pasta Alfredo.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/snacks/Chicken Wings.png",
+      "PackagePath": "staticwebassets/images/menu/snacks/Chicken Wings.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/snacks/Crispy French Fries.png",
+      "PackagePath": "staticwebassets/images/menu/snacks/Crispy French Fries.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/snacks/Nachos Supreme.png",
+      "PackagePath": "staticwebassets/images/menu/snacks/Nachos Supreme.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/snacks/Onion Rings.png",
+      "PackagePath": "staticwebassets/images/menu/snacks/Onion Rings.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/specials/Chef's Pizza.png",
+      "PackagePath": "staticwebassets/images/menu/specials/Chef's Pizza.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/specials/Iced Rose Latte.png",
+      "PackagePath": "staticwebassets/images/menu/specials/Iced Rose Latte.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/specials/Matcha Lava Cake.png",
+      "PackagePath": "staticwebassets/images/menu/specials/Matcha Lava Cake.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/specials/Signature Cold Brew.png",
+      "PackagePath": "staticwebassets/images/menu/specials/Signature Cold Brew.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/js/site.js",
+      "PackagePath": "staticwebassets/js/site.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/LICENSE",
+      "PackagePath": "staticwebassets/lib/bootstrap"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.min.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.min.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.js.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.min.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.js.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.min.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.min.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/bootstrap/dist/js/bootstrap.min.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.min.js.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery-validation-unobtrusive/LICENSE.txt",
+      "PackagePath": "staticwebassets/lib/jquery-validation-unobtrusive/LICENSE.txt"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery-validation/LICENSE.md",
+      "PackagePath": "staticwebassets/lib/jquery-validation/LICENSE.md"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery-validation/dist/additional-methods.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/additional-methods.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery-validation/dist/additional-methods.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/additional-methods.min.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery-validation/dist/jquery.validate.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/jquery.validate.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery-validation/dist/jquery.validate.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/jquery.validate.min.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery/LICENSE.txt",
+      "PackagePath": "staticwebassets/lib/jquery/LICENSE.txt"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery/dist/jquery.js",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery/dist/jquery.min.js",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.js"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery/dist/jquery.min.map",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.map"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.CafeManagement.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.CafeManagement.props",
+      "PackagePath": "build\\CafeManagement.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.CafeManagement.props",
+      "PackagePath": "buildMultiTargeting\\CafeManagement.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.CafeManagement.props",
+      "PackagePath": "buildTransitive\\CafeManagement.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

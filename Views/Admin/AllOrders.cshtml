@@ -1,0 +1,101 @@
+@using CafeManagement.Models.Enums
+@model IEnumerable<CafeManagement.Models.Order>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "All Orders";
+}
+
+<div class="container-fluid">
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white border-0 py-3 d-flex flex-wrap justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-clipboard-list text-brown me-2"></i> Order History</h5>
+            <div class="d-flex gap-2">
+                <form asp-action="AllOrders" method="get" class="d-flex gap-2">
+                    <select name="status" class="form-select form-select-sm rounded-pill ps-3 pe-5 border-2" style="min-width: 160px; cursor: pointer;" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        @foreach (var status in Enum.GetValues<OrderStatus>())
+                        {
+                            <option value="@status" selected="@(Context.Request.Query["status"] == status.ToString())">@status</option>
+                        }
+                    </select>
+                </form>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-3 border-0">Order ID</th>
+                            <th class="border-0">Customer</th>
+                            <th class="border-0">Date</th>
+                            <th class="border-0">Amount</th>
+                            <th class="border-0">Items</th>
+                            <th class="border-0 text-center">Status</th>
+                            <th class="text-end pe-3 border-0">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="fw-bold text-muted">#@order.Id</span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">
+                                        @(order.IsWalkIn ? order.CustomerName : order.User?.Name)
+                                    </div>
+                                    <div class="d-flex align-items-center gap-1 mt-1">
+                                        @if(order.IsWalkIn) { <span class="badge bg-light text-muted border-0 small px-2">Walk-in</span> }
+                                        @if(order.TableId.HasValue) {
+                                            <span class="badge bg-coffee-light text-brown border-0 px-2" style="font-size: 0.7rem;">
+                                                <i class="fas fa-chair me-1"></i>T-@order.Table?.TableNumber
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small text-dark fw-semibold">@order.CreatedAt.ToString("MMM dd, yyyy")</div>
+                                    <div class="small text-muted">@order.CreatedAt.ToString("HH:mm")</div>
+                                </td>
+                                <td class="fw-bold text-brown">৳@order.TotalAmount</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border-0 rounded-pill px-3 py-1">
+                                        @order.OrderItems.Count Items
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    @{
+                                        var statusConfig = order.Status switch {
+                                            OrderStatus.Pending => new { Bg = "#fff3e0", Color = "#ed6c02", Icon = "fa-clock" },
+                                            OrderStatus.Preparing => new { Bg = "#e1f5fe", Color = "#0288d1", Icon = "fa-fire" },
+                                            OrderStatus.Ready => new { Bg = "#e8f5e9", Color = "#2e7d32", Icon = "fa-bell" },
+                                            OrderStatus.Served => new { Bg = "#f3e5f5", Color = "#7b1fa2", Icon = "fa-check-double" },
+                                            OrderStatus.Cancelled => new { Bg = "#ffebee", Color = "#d32f2f", Icon = "fa-times" },
+                                            _ => new { Bg = "#f5f5f5", Color = "#616161", Icon = "fa-question" }
+                                        };
+                                    }
+                                    <span class="badge rounded-pill px-3 py-2" style="background-color: @statusConfig.Bg; color: @statusConfig.Color; min-width: 100px;">
+                                        <i class="fas @statusConfig.Icon me-1"></i> @order.Status
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a asp-action="OrderDetail" asp-route-id="@order.Id" class="btn btn-sm btn-outline-dark rounded-pill px-3 border-2 fw-bold">
+                                        Details
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-coffee-light { background-color: #fdf5ef; }
+    .text-brown { color: #4e342e; }
+    .border-2 { border-width: 2px !important; }
+</style>

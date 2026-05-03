@@ -1,0 +1,158 @@
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Our Heritage";
+}
+
+<style>
+    .heritage-hero {
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                    url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+        background-size: cover;
+        background-position: center;
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+    .story-card {
+        border: none;
+        border-radius: 30px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .value-icon {
+        width: 80px;
+        height: 80px;
+        background: #fdfaf8;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        font-size: 2.5rem;
+        transition: all 0.3s ease;
+    }
+    .value-card:hover .value-icon {
+        transform: rotate(10deg) scale(1.1);
+        background: #4e342e;
+        color: white;
+    }
+    .team-avatar {
+        width: 160px;
+        height: 160px;
+        border-radius: 40px;
+        object-fit: cover;
+        margin-bottom: 20px;
+        border: 5px solid #fff;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    .team-card:hover .team-avatar {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(78, 52, 46, 0.2);
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="heritage-hero">
+    <div class="container text-center text-white">
+        <span class="badge bg-coffee-light text-brown px-3 py-2 rounded-pill mb-4">OUR JOURNEY</span>
+        <h1 class="display-2 fw-bold mb-3">Crafting Heritage Since 2015</h1>
+        <p class="fs-4 opacity-75 mx-auto" style="max-width: 800px;">A commitment to quality, community, and the perfect brew.</p>
+    </div>
+</div>
+
+<!-- Our Story -->
+<div class="container my-5 py-5">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <h2 class="display-4 fw-bold mb-4 text-coffee">Excellence in Every Grain</h2>
+            <p class="lead text-muted mb-4">BrewHouse Cafe was founded on the belief that coffee is more than a drink—it's a ritual that connects hearts and inspires minds.</p>
+            <div class="p-4 bg-light rounded-4 border-start border-coffee border-5 mb-4">
+                <p class="fst-italic mb-0 text-dark">"We don't just serve coffee; we serve memories. Every cup is a testament to our dedication to the art of roasting and the science of brewing."</p>
+            </div>
+            <div class="row g-4 pt-3">
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-check-circle text-success me-3 fa-lg"></i>
+                        <span class="fw-bold">100% Arabica Selection</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-check-circle text-success me-3 fa-lg"></i>
+                        <span class="fw-bold">Direct-Trade Partnerships</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-check-circle text-success me-3 fa-lg"></i>
+                        <span class="fw-bold">Eco-Friendly Packaging</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-check-circle text-success me-3 fa-lg"></i>
+                        <span class="fw-bold">Master Barista Training</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="story-card shadow-lg">
+                <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" class="w-100 h-100 object-fit-cover" alt="Story">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Core Values -->
+<div class="bg-light-subtle py-5">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold text-coffee mb-3">The Pillars of BrewHouse</h2>
+            <p class="text-muted">What drives us to be the best every single day</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center value-card h-100">
+                    <div class="value-icon">🌱</div>
+                    <h4 class="fw-bold mb-3">Integrity</h4>
+                    <p class="text-muted mb-0">Full transparency from crop to cup. We respect the farmers and the earth that provides our bounty.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center value-card h-100">
+                    <div class="value-icon">☕</div>
+                    <h4 class="fw-bold mb-3">Precision</h4>
+                    <p class="text-muted mb-0">Every gram, every degree, and every second matters. We believe in the relentless pursuit of the perfect flavor.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center value-card h-100">
+                    <div class="value-icon">❤️</div>
+                    <h4 class="fw-bold mb-3">Passion</h4>
+                    <p class="text-muted mb-0">Coffee is our soul. We put love into every pour, ensuring you feel the warmth in every sip.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team Section -->
+<div class="container py-5 my-5">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold text-coffee">Our Visionary Leadership</h2>
+        <p class="text-muted">The experts behind your daily cup</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-3 col-md-6 team-card text-center">
+            <img src="https://ui-avatars.com/api/?name=Nishan&size=200&background=4e342e&color=fff&font-size=0.3" class="team-avatar" alt="Founder">
+            <h4 class="fw-bold mb-1">Nishan</h4>
+            <p class="text-coffee-light fw-bold text-uppercase small letter-spacing-1">Founder & CEO</p>
+            <p class="text-muted small px-3">Visionary entrepreneur with a lifelong obsession for coffee excellence.</p>
+        </div>
+        <div class="col-lg-3 col-md-6 team-card text-center">
+            <img src="https://ui-avatars.com/api/?name=Lyraa&size=200&background=D4A574&color=2C1810&font-size=0.3" class="team-avatar" alt="Manager">
+            <h4 class="fw-bold mb-1">Lyraa</h4>
+            <p class="text-coffee-light fw-bold text-uppercase small letter-spacing-1">Managing Director</p>
+            <p class="text-muted small px-3">Expert in operational excellence and customer experience strategy.</p>
+        </div>
+    </div>
+</div>

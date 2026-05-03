@@ -1,0 +1,190 @@
+@using CafeManagement.Models.Enums
+@model CafeManagement.Models.Order
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Track Order";
+    
+    int step = Model.Status switch {
+        OrderStatus.Pending => 1,
+        OrderStatus.Preparing => 2,
+        OrderStatus.Ready => 3,
+        OrderStatus.Served => 4,
+        OrderStatus.Cancelled => 0,
+        _ => 1
+    };
+}
+
+<style>
+    .tracking-stepper {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        margin: 60px 0 80px;
+    }
+    .tracking-stepper::before {
+        content: '';
+        position: absolute;
+        top: 25px;
+        left: 5%;
+        right: 5%;
+        height: 4px;
+        background: #f0f0f0;
+        z-index: 0;
+    }
+    .stepper-progress {
+        position: absolute;
+        top: 25px;
+        left: 5%;
+        height: 4px;
+        background: #2e7d32;
+        z-index: 1;
+        transition: width 1s ease-in-out;
+    }
+    .step-item {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        width: 25%;
+    }
+    .step-dot {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: #fff;
+        border: 4px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        color: #ccc;
+    }
+    .step-item.active .step-dot {
+        border-color: #2e7d32;
+        background: #2e7d32;
+        color: #fff;
+        box-shadow: 0 0 20px rgba(46, 125, 50, 0.3);
+        transform: scale(1.1);
+    }
+    .step-item.active .step-label {
+        color: #2e7d32;
+        font-weight: 800;
+    }
+    .step-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #999;
+        font-weight: 600;
+    }
+    .pulse-animation {
+        animation: pulse-green 2s infinite;
+    }
+    @@keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
+        70% { box-shadow: 0 0 0 15px rgba(46, 125, 50, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+    }
+</style>
+
+<div class="container mt-5 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="text-center mb-5">
+                <span class="badge bg-coffee-light text-brown px-3 py-2 rounded-pill mb-3">Order Status</span>
+                <h2 class="display-5 fw-bold text-coffee">Tracking Order #@Model.Id</h2>
+                <p class="text-muted">We're working hard to get your order ready!</p>
+            </div>
+
+            @if(Model.Status == OrderStatus.Cancelled)
+            {
+                <div class="card border-0 shadow-lg rounded-4 p-5 text-center bg-danger text-white">
+                    <i class="fas fa-times-circle fa-5x mb-4"></i>
+                    <h2 class="fw-bold">Order Cancelled</h2>
+                    <p class="opacity-75 fs-5">We're sorry, but your order has been cancelled. Please visit the counter or contact us for more information.</p>
+                    <div class="mt-4">
+                        <a asp-action="OrderHistory" class="btn btn-light rounded-pill px-4 fw-bold">Back to My Orders</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="tracking-stepper">
+                    <div class="stepper-progress" style="width: @((step-1) * 30)%;"></div>
+                    
+                    <div class="step-item @(step >= 1 ? "active" : "")">
+                        <div class="step-dot @(step == 1 ? "pulse-animation" : "")">
+                            <i class="fas fa-receipt fa-lg"></i>
+                        </div>
+                        <div class="step-label">Pending</div>
+                    </div>
+                    <div class="step-item @(step >= 2 ? "active" : "")">
+                        <div class="step-dot @(step == 2 ? "pulse-animation" : "")">
+                            <i class="fas fa-fire fa-lg"></i>
+                        </div>
+                        <div class="step-label">Preparing</div>
+                    </div>
+                    <div class="step-item @(step >= 3 ? "active" : "")">
+                        <div class="step-dot @(step == 3 ? "pulse-animation" : "")">
+                            <i class="fas fa-concierge-bell fa-lg"></i>
+                        </div>
+                        <div class="step-label">Ready</div>
+                    </div>
+                    <div class="step-item @(step >= 4 ? "active" : "")">
+                        <div class="step-dot @(step == 4 ? "pulse-animation" : "")">
+                            <i class="fas fa-check-double fa-lg"></i>
+                        </div>
+                        <div class="step-label">Served</div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                            <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted mb-3">Order Details</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Placed At</span>
+                                <span class="fw-bold">@Model.CreatedAt.ToString("hh:mm tt")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Total Paid</span>
+                                <span class="fw-bold text-coffee">৳@Model.TotalAmount</span>
+                            </div>
+                            @if(Model.TableId.HasValue)
+                            {
+                                <div class="d-flex justify-content-between align-items-center mt-2 p-2 bg-light rounded-3">
+                                    <span class="text-muted small">Your Table</span>
+                                    <span class="badge bg-dark rounded-pill">Table @Model.Table?.TableNumber</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                            <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted mb-3">Special Instructions</h6>
+                            <p class="fst-italic text-muted mb-0">
+                                @(string.IsNullOrEmpty(Model.Notes) ? "No special instructions provided." : Model.Notes)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="text-center">
+                <a asp-action="OrderHistory" class="btn btn-outline-dark rounded-pill px-5 border-2 fw-bold me-2">Back to History</a>
+                <a asp-controller="Home" asp-action="Menu" class="btn btn-coffee rounded-pill px-5 fw-bold shadow">Order More</a>
+                <div class="mt-4">
+                    <p class="text-muted small"><i class="fas fa-sync fa-spin me-2 text-coffee"></i> Auto-refreshing in 30s...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+    </script>
+}

@@ -1,0 +1,100 @@
+@model CafeManagement.Models.User
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left: Identity Panel -->
+                    <div class="col-md-5 profile-identity-panel p-5 text-center d-flex flex-column justify-content-center position-relative overflow-hidden">
+                        <div class="position-relative z-1">
+                            <div class="position-relative d-inline-block mx-auto mb-4">
+                                <img src="https://ui-avatars.com/api/?name=@Model.Name&size=120&background=D4A574&color=2C1810&font-size=0.4" class="rounded-circle shadow-lg border border-4 border-white border-opacity-25" alt="@Model.Name">
+                                <div class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-3 border-dark animate__animated animate__pulse animate__infinite" style="width: 24px; height: 24px;"></div>
+                            </div>
+                            <h2 class="display-font fw-bold mb-1 text-white">@Model.Name</h2>
+                            <p class="text-coffee-light mb-4 opacity-75">@Model.Email</p>
+                            <div class="verified-badge d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill mb-4">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <span class="text-uppercase fw-bold letter-spacing-1" style="font-size: 0.7rem;">Verified Account</span>
+                            </div>
+                            
+                            <div class="mt-4 pt-4 border-top border-white border-opacity-10">
+                                <div class="small fw-bold text-uppercase text-white-50 letter-spacing-1 mb-2">Member Since</div>
+                                <div class="text-white fs-5 fw-light">@Model.CreatedAt.ToString("MMMM yyyy")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Edit Panel -->
+                    <div class="col-md-7 bg-white p-5">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold mb-0">Account Settings</h4>
+                            <i class="fas fa-cog text-muted"></i>
+                        </div>
+
+                        <form asp-action="Profile" method="post" class="profile-form">
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-uppercase letter-spacing-1">Full Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-2 border-end-0"><i class="fas fa-id-card text-muted"></i></span>
+                                    <input type="text" name="name" class="form-control border-2 border-start-0" value="@Model.Name" required />
+                                </div>
+                            </div>
+
+                            <div class="mb-5">
+                                <label class="form-label small fw-bold text-uppercase letter-spacing-1">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-2 border-end-0"><i class="fas fa-envelope text-muted"></i></span>
+                                    <input type="email" name="email" class="form-control border-2 border-start-0" value="@Model.Email" required />
+                                </div>
+                                <small class="text-muted mt-2 d-block"><i class="fas fa-info-circle me-1"></i> Changing email will require re-verification.</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-coffee btn-lg w-100 rounded-pill fw-bold py-3 shadow-sm">
+                                Save Changes <i class="fas fa-save ms-2"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-identity-panel {
+        background: linear-gradient(135deg, #2C1810 0%, #3e2723 100%);
+        border-right: 1px solid rgba(255,255,255,0.05);
+    }
+    .profile-identity-panel::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(212,165,116,0.05) 0%, transparent 70%);
+    }
+    .display-font { font-family: 'Playfair Display', serif; }
+    .verified-badge {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        color: #fff;
+    }
+    .rounded-4 { border-radius: 30px !important; }
+    .text-coffee-light { color: #D4A574; }
+    .letter-spacing-1 { letter-spacing: 1px; }
+    .profile-form .form-control:focus {
+        border-color: #4e342e;
+        box-shadow: 0 0 0 4px rgba(78, 52, 46, 0.1);
+    }
+    .profile-form .input-group-text {
+        border-color: #f0f0f0;
+    }
+</style>

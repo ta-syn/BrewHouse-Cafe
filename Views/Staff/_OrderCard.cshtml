@@ -1,0 +1,59 @@
+@using CafeManagement.Models.Enums
+@model CafeManagement.Models.Order
+
+<div class="card border-0 shadow-sm rounded-4 mb-2 overflow-hidden transition-hover" id="order-card-@Model.Id" style="border-left: 5px solid @(Model.Status == OrderStatus.Pending ? "#ffc107" : Model.Status == OrderStatus.Preparing ? "#0dcaf0" : "#198754") !important;">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <h5 class="fw-bold mb-0">#@Model.Id</h5>
+                <small class="text-muted text-uppercase letter-spacing-1" style="font-size: 0.7rem;">
+                    <i class="far fa-clock me-1"></i> Placed @Model.CreatedAt.ToString("hh:mm tt")
+                </small>
+            </div>
+            @if (Model.TableId.HasValue)
+            {
+                <span class="badge bg-dark rounded-pill px-3 py-2">
+                    <i class="fas fa-chair me-2"></i>T-@Model.Table?.TableNumber
+                </span>
+            }
+            else
+            {
+                <span class="badge bg-secondary rounded-pill px-3 py-2">
+                    <i class="fas fa-shopping-bag me-2"></i>TAKEAWAY
+                </span>
+            }
+        </div>
+
+        <div class="mb-3">
+            <div class="small fw-bold text-muted text-uppercase letter-spacing-1 mb-2">Customer</div>
+            <div class="fw-bold h6 mb-0 text-truncate">@(Model.IsWalkIn ? Model.CustomerName : Model.User?.Name)</div>
+        </div>
+
+        <div class="bg-light rounded-3 p-3 mb-4">
+            <div class="small fw-bold text-muted text-uppercase letter-spacing-1 mb-2">Items</div>
+            <ul class="list-unstyled mb-0">
+                @foreach (var item in Model.OrderItems)
+                {
+                    <li class="d-flex justify-content-between align-items-center mb-1">
+                        <span><span class="badge bg-white text-dark border me-2">@item.Quantity</span> @item.ItemName</span>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        @{
+            var (nextStatus, btnText, btnClass, icon) = Model.Status switch {
+                OrderStatus.Pending => ("Preparing", "Start Preparing", "btn-warning", "fa-fire"),
+                OrderStatus.Preparing => ("Ready", "Mark as Ready", "btn-info text-white", "fa-check"),
+                OrderStatus.Ready => ("Served", "Mark as Served", "btn-success", "fa-concierge-bell"),
+                _ => ("", "", "", "")
+            };
+        }
+
+        @if(!string.IsNullOrEmpty(nextStatus)) {
+            <button onclick="updateStatus(@Model.Id, '@nextStatus')" class="btn btn-lg w-100 @btnClass rounded-pill fw-bold shadow-sm status-btn">
+                @btnText <i class="fas @icon ms-2"></i>
+            </button>
+        }
+    </div>
+</div>

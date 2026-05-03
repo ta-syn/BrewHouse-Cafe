@@ -1,0 +1,229 @@
+@model IEnumerable<CafeManagement.Models.MenuItem>
+@{
+    Layout = "_StaffLayout";
+    ViewData["Title"] = "New Walk-in Order";
+}
+
+<div class="container-fluid py-4">
+    <div class="row g-4">
+        <!-- Left Side: Menu Grid -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="fw-bold mb-0">POS Terminal</h4>
+                        <p class="text-muted small mb-0">Select items to add to current order</p>
+                    </div>
+                    <div class="input-group w-50 shadow-sm rounded-pill overflow-hidden border">
+                        <span class="input-group-text border-0 bg-light"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" id="menuSearch" class="form-control border-0 bg-light" placeholder="Search menu...">
+                    </div>
+                </div>
+                <div class="card-body p-4 bg-light-subtle" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="row g-3" id="menuGrid">
+                        @foreach (var item in Model)
+                        {
+                            <div class="col-md-6 col-xl-4 menu-item-card" data-name="@item.Name.ToLower()">
+                                <div class="card border-0 h-100 rounded-4 shadow-sm p-3 transition-hover pos-item-card" onclick="changeQty(@item.Id, 1)">
+                                    <div class="d-flex align-items-start gap-3 mb-3">
+                                        <div class="bg-white rounded-4 shadow-sm d-flex align-items-center justify-content-center border" style="width: 70px; height: 70px; font-size: 2.2rem; min-width: 70px;">
+                                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                            {
+                                                <img src="@item.ImageUrl" class="w-100 h-100 object-fit-cover rounded-4" alt="@item.Name">
+                                            }
+                                            else
+                                            {
+                                                @item.ImageEmoji
+                                            }
+                                        </div>
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <h6 class="fw-bold mb-1 text-truncate">@item.Name</h6>
+                                            <div class="text-brown fw-bold">৳@item.Price</div>
+                                            <div class="mt-2">
+                                                @if (item is CafeManagement.Models.Food food)
+                                                {
+                                                    <span class="badge @(food.IsVegetarian ? "bg-success" : "bg-danger") opacity-75" style="font-size: 0.6rem;">@(food.IsVegetarian ? "VEG" : "NON-VEG")</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-auto d-flex align-items-center justify-content-between">
+                                        <div class="qty-control d-flex align-items-center bg-light rounded-pill p-1" onclick="event.stopPropagation()">
+                                            <button class="btn btn-sm btn-white rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;" onclick="changeQty(@item.Id, -1)">
+                                                <i class="fas fa-minus x-small"></i>
+                                            </button>
+                                            <input type="number" id="qty-@item.Id" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold item-qty mx-1 p-0" 
+                                                   value="0" min="0" style="width: 30px;"
+                                                   data-id="@item.Id" data-name="@item.Name" data-price="@item.Price" data-emoji="@item.ImageEmoji"
+                                                   onchange="calculateTotal()">
+                                            <button class="btn btn-sm btn-white rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;" onclick="changeQty(@item.Id, 1)">
+                                                <i class="fas fa-plus x-small"></i>
+                                            </button>
+                                        </div>
+                                        <div class="qty-badge bg-coffee text-white rounded-pill px-2 py-1 small fw-bold d-none" id="badge-@item.Id">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Order Summary -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 p-4 sticky-top" style="top: 100px;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">Current Order</h5>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="clearOrder()"><i class="fas fa-trash-alt me-1"></i> Clear</button>
+                </div>
+
+                <form asp-action="WalkInOrder" method="post" id="walkInForm">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Customer Name</label>
+                        <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                            <span class="input-group-text border-0 bg-light text-muted"><i class="fas fa-user"></i></span>
+                            <input type="text" name="customerName" class="form-control border-0 bg-light" value="Walk-in Customer" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Service Location</label>
+                        <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                            <span class="input-group-text border-0 bg-light text-muted"><i class="fas fa-map-marker-alt"></i></span>
+                            <select name="tableId" class="form-select border-0 bg-light fw-bold">
+                                <option value="">Takeaway / No Table</option>
+                                @if (ViewBag.Tables != null)
+                                {
+                                    @foreach (var table in (IEnumerable<CafeManagement.Models.CafeTable>)ViewBag.Tables)
+                                    {
+                                        <option value="@table.Id" disabled="@(table.Status != CafeManagement.Models.Enums.TableStatus.Available)" class="@(table.Status != CafeManagement.Models.Enums.TableStatus.Available ? "text-danger" : "")">
+                                            Table @table.TableNumber (@(table.Status == CafeManagement.Models.Enums.TableStatus.Available ? "Free" : "Occupied"))
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="selected-items-panel bg-light rounded-4 p-3 mb-4" style="min-height: 200px; max-height: 400px; overflow-y: auto;">
+                        <div id="selectedItemsList">
+                            <div class="text-center py-5 opacity-50">
+                                <i class="fas fa-shopping-basket fa-3x mb-3"></i>
+                                <p class="mb-0">Your basket is empty</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-dark text-white rounded-4 mb-4 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="opacity-75">Order Total</span>
+                            <span class="fs-2 fw-bold">৳<span id="grandTotal">0</span></span>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="itemsJson" id="itemsJson" />
+                    <button type="submit" id="submitBtn" class="btn btn-coffee btn-lg w-100 rounded-pill fw-bold py-3 shadow" disabled>
+                        PROCESS ORDER <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pos-item-card { cursor: pointer; border: 2px solid transparent !important; }
+    .pos-item-card:hover { transform: translateY(-5px); border-color: #4e342e !important; }
+    .pos-item-card.active { border-color: #4e342e !important; background-color: #fffaf5; }
+    .x-small { font-size: 0.6rem; }
+    .selected-item-row { border-bottom: 1px dashed #dee2e6; padding: 10px 0; }
+    .selected-item-row:last-child { border-bottom: 0; }
+    .bg-light-subtle { background-color: #fdfaf8; }
+</style>
+
+@section Scripts {
+    <script>
+        function changeQty(id, delta) {
+            const input = $(`#qty-${id}`);
+            let val = parseInt(input.val()) + delta;
+            if (val < 0) val = 0;
+            input.val(val).trigger('change');
+            
+            const badge = $(`#badge-${id}`);
+            if (val > 0) {
+                badge.text(val).removeClass('d-none');
+                input.closest('.pos-item-card').addClass('active');
+            } else {
+                badge.addClass('d-none');
+                input.closest('.pos-item-card').removeClass('active');
+            }
+        }
+
+        function clearOrder() {
+            $('.item-qty').val(0).trigger('change');
+            $('.qty-badge').addClass('d-none');
+            $('.pos-item-card').removeClass('active');
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            let items = [];
+            let html = '';
+
+            $('.item-qty').each(function() {
+                const qty = parseInt($(this).val());
+                if (qty > 0) {
+                    const price = parseFloat($(this).data('price'));
+                    const name = $(this).data('name');
+                    const id = $(this).data('id');
+                    const emoji = $(this).data('emoji');
+                    const subtotal = qty * price;
+                    
+                    total += subtotal;
+                    items.push({
+                        MenuItemId: id,
+                        ItemName: name,
+                        UnitPrice: price,
+                        Quantity: qty,
+                        ImageEmoji: emoji
+                    });
+
+                    html += `<div class="selected-item-row d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2 fw-bold text-coffee">${qty}x</div>
+                                    <div>
+                                        <div class="fw-bold small">${name}</div>
+                                        <div class="text-muted" style="font-size: 0.7rem;">@@৳${price}</div>
+                                    </div>
+                                </div>
+                                <div class="fw-bold">৳${subtotal.toFixed(2)}</div>
+                             </div>`;
+                }
+            });
+
+            $('#grandTotal').text(total.toFixed(2));
+            $('#itemsJson').val(JSON.stringify(items));
+            $('#submitBtn').prop('disabled', total <= 0);
+            
+            if (html) {
+                $('#selectedItemsList').html(html);
+            } else {
+                $('#selectedItemsList').html(`<div class="text-center py-5 opacity-50">
+                                <i class="fas fa-shopping-basket fa-3x mb-3"></i>
+                                <p class="mb-0">Your basket is empty</p>
+                            </div>`);
+            }
+        }
+
+        $(document).ready(function() {
+            $('#menuSearch').on('keyup', function() {
+                const q = $(this).val().toLowerCase();
+                $('.menu-item-card').each(function() {
+                    $(this).toggle($(this).data('name').includes(q));
+                });
+            });
+        });
+    </script>
+}
