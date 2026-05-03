@@ -96,45 +96,50 @@ using (var scope = app.Services.CreateScope())
     }
     db.SaveChanges();
 
-    // ═══ ORDER ID SANITIZATION (STRICT SYNC) ═══
+    // ═══ ORDER ID SANITIZATION (COPY-SWAP METHOD) ═══
     try
     {
         Console.WriteLine("[DB CLEANUP] Checking for order ID consistency...");
         var allOrders = db.Orders.OrderBy(o => o.CreatedAt).ToList();
         
-        if (allOrders.Any())
+        if (allOrders.Any() && allOrders.First().Id != 1)
         {
-            Console.WriteLine($"[DB CLEANUP] Found {allOrders.Count} orders. First Order ID: {allOrders.First().Id}");
+            int offset = allOrders.First().Id - 1;
+            Console.WriteLine($"[DB CLEANUP] Shifting IDs with offset: {offset}");
             
-            if (allOrders.First().Id != 1)
+            foreach (var order in allOrders)
             {
-                int offset = allOrders.First().Id - 1;
-                Console.WriteLine($"[DB CLEANUP] Shifting IDs with offset: {offset}");
-                
-                foreach (var order in allOrders)
-                {
-                    var oldId = order.Id;
-                    var newId = oldId - offset;
+                var oldId = order.Id;
+                var newId = oldId - offset;
 
-                    db.Database.ExecuteSqlRaw($"UPDATE \"OrderItems\" SET \"OrderId\" = {newId} WHERE \"OrderId\" = {oldId}");
-                    db.Database.ExecuteSqlRaw($"UPDATE \"Orders\" SET \"Id\" = {newId} WHERE \"Id\" = {oldId}");
-                }
+                // 1. Copy the order to the new ID using raw SQL
+                // Note: We use double quotes for PostgreSQL compatibility
+                db.Database.ExecuteSqlRaw($@"
+                    INSERT INTO ""Orders"" (""Id"", ""UserId"", ""TableId"", ""CustomerName"", ""TotalAmount"", ""DiscountApplied"", ""Status"", ""Notes"", ""IsWalkIn"", ""CreatedAt"")
+                    SELECT {newId}, ""UserId"", ""TableId"", ""CustomerName"", ""TotalAmount"", ""DiscountApplied"", ""Status"", ""Notes"", ""IsWalkIn"", ""CreatedAt""
+                    FROM ""Orders"" WHERE ""Id"" = {oldId}");
 
-                var maxId = allOrders.Max(o => o.Id) - offset;
-                db.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('\"Orders\"', 'Id'), {maxId}, true)");
-                
-                Console.WriteLine($"[DB CLEANUP] SUCCESS: Shifted {allOrders.Count} orders. Max ID is now {maxId}.");
+                // 2. Point existing items to the new ID
+                db.Database.ExecuteSqlRaw($@"UPDATE ""OrderItems"" SET ""OrderId"" = {newId} WHERE ""OrderId"" = {oldId}");
+
+                // 3. Delete the old order record
+                db.Database.ExecuteSqlRaw($@"DELETE FROM ""Orders"" WHERE ""Id"" = {oldId}");
             }
-            else
-            {
-                Console.WriteLine("[DB CLEANUP] Order ID is already 1. No shifting needed.");
-            }
+
+            // 4. Reset the sequence so next order is max(Id) + 1
+            var maxId = allOrders.Max(o => o.Id) - offset;
+            db.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('\"Orders\"', 'Id'), {maxId}, true)");
+            
+            Console.WriteLine($"[DB CLEANUP] SUCCESS: Shifted {allOrders.Count} orders. Max ID is now {maxId}.");
+        }
+        else if (!allOrders.Any())
+        {
+            Console.WriteLine("[DB CLEANUP] No orders found. Resetting sequence to 1.");
+            db.Database.ExecuteSqlRaw("SELECT setval(pg_get_serial_sequence('\"Orders\"', 'Id'), 1, false)");
         }
         else
         {
-            Console.WriteLine("[DB CLEANUP] No orders found to sanitize.");
-            // Reset sequence to 0 just in case there are no orders
-            db.Database.ExecuteSqlRaw("SELECT setval(pg_get_serial_sequence('\"Orders\"', 'Id'), 1, false)");
+            Console.WriteLine("[DB CLEANUP] Order ID is already 1. No shifting needed.");
         }
     }
     catch (Exception ex)
