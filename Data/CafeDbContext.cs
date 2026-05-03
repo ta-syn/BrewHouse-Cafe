@@ -1,13 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using CafeManagement.Models;
 using CafeManagement.Models.Enums;
 
 namespace CafeManagement.Data
 {
-    public class CafeDbContext : DbContext
+    public class CafeDbContext : DbContext, IDataProtectionKeyContext
     {
         public CafeDbContext(DbContextOptions<CafeDbContext> options) : base(options) { }
 
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<Beverage> Beverages { get; set; }

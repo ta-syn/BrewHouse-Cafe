@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.DataProtection;
 using CafeManagement.Data;
 using CafeManagement.Services;
 using CafeManagement.Models;
@@ -16,6 +17,9 @@ var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
 
 builder.Services.AddDbContext<CafeDbContext>(options => 
     options.UseNpgsql(connectionString));
+
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<CafeDbContext>();
 
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(30);

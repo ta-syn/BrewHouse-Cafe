@@ -103,3 +103,11 @@
 /Users/nishan/Downloads/CafeManagement/obj/Debug/net8.0/ref/CafeManagement.dll
 /Users/nishan/Downloads/CafeManagement/bin/Debug/net8.0/DotNetEnv.dll
 /Users/nishan/Downloads/CafeManagement/bin/Debug/net8.0/Superpower.dll
+/Users/nishan/Downloads/CafeManagement/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.Internal.dll
+/Users/nishan/Downloads/CafeManagement/bin/Debug/net8.0/Microsoft.AspNetCore.DataProtection.dll
+/Users/nishan/Downloads/CafeManagement/bin/Debug/net8.0/Microsoft.AspNetCore.DataProtection.Abstractions.dll
+/Users/nishan/Downloads/CafeManagement/bin/Debug/net8.0/Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.dll
+/Users/nishan/Downloads/CafeManagement/bin/Debug/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
+/Users/nishan/Downloads/CafeManagement/bin/Debug/net8.0/Microsoft.Extensions.Logging.Abstractions.dll
+/Users/nishan/Downloads/CafeManagement/bin/Debug/net8.0/Microsoft.Extensions.Options.dll
+/Users/nishan/Downloads/CafeManagement/obj/Debug/net8.0/CafeManagement.sourcelink.json

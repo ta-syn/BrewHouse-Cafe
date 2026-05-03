@@ -9,28 +9,20 @@
       "PackagePath": "staticwebassets/favicon.ico"
     },
     {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
       "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/auth/login_bg.png",
       "PackagePath": "staticwebassets/images/auth/login_bg.png"
     },
     {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/github/banner.png",
+      "PackagePath": "staticwebassets/images/github/banner.png"
+    },
+    {
       "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/landing/cta_bg.png",
       "PackagePath": "staticwebassets/images/landing/cta_bg.png"
-    },
-    {
-      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/088a1e14-68dd-4931-9fe8-10ee2459e380.jpeg",
-      "PackagePath": "staticwebassets/images/menu/088a1e14-68dd-4931-9fe8-10ee2459e380.jpeg"
-    },
-    {
-      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/0a3a8947-eb55-4027-a5c8-4ab7d1ab84b4.jpg",
-      "PackagePath": "staticwebassets/images/menu/0a3a8947-eb55-4027-a5c8-4ab7d1ab84b4.jpg"
-    },
-    {
-      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/482cbc2d-b724-4e66-87a7-504a63154b3f.jpeg",
-      "PackagePath": "staticwebassets/images/menu/482cbc2d-b724-4e66-87a7-504a63154b3f.jpeg"
-    },
-    {
-      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/668e32fd-466d-462e-9d77-f8db7bfc8d84.jpg",
-      "PackagePath": "staticwebassets/images/menu/668e32fd-466d-462e-9d77-f8db7bfc8d84.jpg"
     },
     {
       "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/beverages/Caramel Macchiato.png",
