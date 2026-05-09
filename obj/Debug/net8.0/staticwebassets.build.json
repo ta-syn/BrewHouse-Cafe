@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "/HGJ8bXpmpkT+v1ohloYtWO1cmE5GSrcmDAs76YB9Us=",
+  "Hash": "DORVfW1mukX0+E8BY3uGwYZiW0n+YoWIn4QyNCClNIE=",
   "Source": "CafeManagement",
   "BasePath": "_content/CafeManagement",
   "Mode": "Default",
@@ -131,6 +131,25 @@
       "OriginalItemSpec": "wwwroot/images/landing/cta_bg.png"
     },
     {
+      "Identity": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/2e8bf889-834b-4846-8974-0264ee4beae0.jpg",
+      "SourceId": "CafeManagement",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/nishan/Downloads/CafeManagement/wwwroot/",
+      "BasePath": "_content/CafeManagement",
+      "RelativePath": "images/menu/2e8bf889-834b-4846-8974-0264ee4beae0.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/menu/2e8bf889-834b-4846-8974-0264ee4beae0.jpg"
+    },
+    {
       "Identity": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/beverages/Caramel Macchiato.png",
       "SourceId": "CafeManagement",
       "SourceType": "Discovered",
@@ -205,6 +224,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/images/menu/beverages/Matcha Latte.png"
+    },
+    {
+      "Identity": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/d4ff13fb-2d59-4c79-965b-74990c709f30.jpeg",
+      "SourceId": "CafeManagement",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/nishan/Downloads/CafeManagement/wwwroot/",
+      "BasePath": "_content/CafeManagement",
+      "RelativePath": "images/menu/d4ff13fb-2d59-4c79-965b-74990c709f30.jpeg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/menu/d4ff13fb-2d59-4c79-965b-74990c709f30.jpeg"
     },
     {
       "Identity": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/desserts/Blueberry Cheesecake.png",
@@ -1611,6 +1649,44 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/lib/jquery/LICENSE.txt"
+    },
+    {
+      "Identity": "/Users/nishan/Downloads/CafeManagement/wwwroot/manifest.json",
+      "SourceId": "CafeManagement",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/nishan/Downloads/CafeManagement/wwwroot/",
+      "BasePath": "_content/CafeManagement",
+      "RelativePath": "manifest.json",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/manifest.json"
+    },
+    {
+      "Identity": "/Users/nishan/Downloads/CafeManagement/wwwroot/sw.js",
+      "SourceId": "CafeManagement",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/nishan/Downloads/CafeManagement/wwwroot/",
+      "BasePath": "_content/CafeManagement",
+      "RelativePath": "sw.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/sw.js"
     }
   ]
 }

@@ -256,21 +256,18 @@
                 $('#btnDeleteCategory').hide();
             } else {
                 $('#newCategoryContainer').hide();
-                // Show delete button for existing categories
-                if (category) {
-                    $('#btnDeleteCategory').fadeIn();
-                } else {
-                    $('#btnDeleteCategory').hide();
-                }
+                if (category) $('#btnDeleteCategory').fadeIn();
+                else $('#btnDeleteCategory').hide();
 
-                // Auto-select color if it exists for this category
-                if (categoryColors && categoryColors[category]) {
-                    setCategoryColor(categoryColors[category], null);
-                    // Also find and highlight the matching swatch
+                // Get current item color or category-wide color
+                let targetColor = categoryColors[category] || '@Model.CategoryColor';
+                
+                if (targetColor) {
+                    setCategoryColor(targetColor, null);
+                    // Force highlight of matching swatch
                     $('.color-swatch').each(function() {
-                        const swatchColor = rgb2hex($(this).css('background-color')).toUpperCase();
-                        const targetColor = categoryColors[category].toUpperCase();
-                        if (swatchColor === targetColor) {
+                        const swatchHex = rgb2hex($(this).css('background-color')).toLowerCase();
+                        if (swatchHex === targetColor.toLowerCase()) {
                             $(this).addClass('active');
                         } else {
                             $(this).removeClass('active');
@@ -279,6 +276,7 @@
                 }
             }
         }
+
 
         function confirmDeleteCategory() {
             const category = $('#categorySelector').val();

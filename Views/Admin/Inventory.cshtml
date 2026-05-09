@@ -1,0 +1,276 @@
+@model IEnumerable<CafeManagement.Models.InventoryItem>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Inventory Management";
+}
+
+<div class="container-fluid px-4 py-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-coffee mb-1">📦 Inventory & Supply Chain</h2>
+            <p class="text-muted small mb-0">Track raw ingredients and automated stock levels.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary rounded-pill px-4 shadow-sm" onclick="showWastageHistory()">
+                <i class="fas fa-history me-2"></i> Wastage History
+            </button>
+            <button class="btn btn-outline-danger rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#wastageModal">
+                <i class="fas fa-trash-alt me-2"></i> Record Wastage
+            </button>
+            <button class="btn btn-coffee rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                <i class="fas fa-plus me-2"></i> Add New Ingredient
+            </button>
+        </div>
+    </div>
+
+    <!-- Inventory Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-success">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3 text-success">
+                        <i class="fas fa-box fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted small text-uppercase fw-bold mb-1">Total Ingredients</h6>
+                        <h3 class="fw-bold mb-0">@Model.Count()</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-warning">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3 text-warning">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted small text-uppercase fw-bold mb-1">Low Stock Alerts</h6>
+                        <h3 class="fw-bold mb-0">@Model.Count(i => i.StockQuantity <= i.MinStockLevel)</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4" style="width: 80px;">Img</th>
+                        <th>Ingredient Name</th>
+
+                        <th>Current Stock</th>
+                        <th>Safety Level</th>
+                        <th>Last Updated</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        bool isLow = item.StockQuantity <= item.MinStockLevel;
+                        <tr>
+                            <td class="ps-4">
+                                <div class="rounded-3 overflow-hidden shadow-sm border" style="width: 45px; height: 45px;">
+                                    <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "https://via.placeholder.com/45" : item.ImageUrl)" 
+                                         class="w-100 h-100 object-fit-cover" alt="@item.Name">
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark">@item.Name</span>
+                            </td>
+
+                            <td>
+                                <span class="badge @(isLow ? "bg-danger" : "bg-light text-dark") fs-6 px-3">
+                                    @item.StockQuantity @item.Unit
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-muted small">Min: @item.MinStockLevel @item.Unit</span>
+                            </td>
+                            <td>
+                                <span class="text-muted small">@item.LastUpdated.ToString("MMM dd, hh:mm tt")</span>
+                            </td>
+                            <td>
+                                @if (isLow)
+                                {
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">
+                                        <i class="fas fa-arrow-down me-1"></i> Low Stock
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
+                                        <i class="fas fa-check me-1"></i> Healthy
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-outline-coffee rounded-pill px-3" onclick="openUpdateModal(@item.Id, '@item.Name', @item.StockQuantity)">
+                                    <i class="fas fa-edit me-1"></i> Update
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Update Stock Modal -->
+<div class="modal fade" id="updateStockModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <form asp-action="UpdateInventory" method="post">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Update Stock: <span id="modalItemName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <input type="hidden" name="id" id="modalItemId" />
+                    <div class="mb-3">
+                        <label class="form-label small text-muted text-uppercase fw-bold">New Quantity</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" name="quantity" id="modalQuantity" class="form-control rounded-start-pill" required />
+                            <span class="input-group-text rounded-end-pill bg-light border-start-0">Qty</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-coffee rounded-pill px-4">Update Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Record Wastage Modal -->
+<div class="modal fade" id="wastageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <form asp-action="RecordWastage" method="post">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-danger">⚠️ Record Ingredient Wastage</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="mb-3">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Select Ingredient</label>
+                        <select name="id" class="form-select rounded-pill" required>
+                            <option value="">-- Select --</option>
+                            @foreach (var inv in Model)
+                            {
+                                <option value="@inv.Id">@inv.Name (@inv.Unit)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Quantity Wasted</label>
+                        <input type="number" step="0.01" name="quantity" class="form-control rounded-pill" placeholder="e.g. 50" required />
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Reason</label>
+                        <textarea name="reason" class="form-control rounded-4" rows="2" placeholder="e.g. Milk spilled, Beans expired..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">Log Wastage</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Wastage History Modal -->
+<div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-0 bg-light rounded-top-4">
+                <h5 class="modal-title fw-bold"><i class="fas fa-history me-2"></i> Recent Wastage Logs</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive" style="max-height: 400px;">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light sticky-top">
+                            <tr>
+                                <th class="ps-4">Ingredient</th>
+                                <th>Quantity</th>
+                                <th>Reason</th>
+                                <th class="pe-4 text-end">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wastageHistoryBody">
+                            <!-- Populated via AJAX -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🔊 Audio for Alerts -->
+<audio id="warningSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
+@section Scripts {
+    <script>
+        function openUpdateModal(id, name, qty) {
+            $('#modalItemId').val(id);
+            $('#modalItemName').text(name);
+            $('#modalQuantity').val(qty);
+            $('#updateStockModal').modal('show');
+        }
+
+        function showWastageHistory() {
+            $.get('/Admin/GetWastageHistory', function(data) {
+                const body = $('#wastageHistoryBody');
+                body.empty();
+                if (data.length === 0) {
+                    body.append('<tr><td colspan="4" class="text-center py-4 text-muted">No wastage logs found.</td></tr>');
+                } else {
+                    data.forEach(log => {
+                        body.append(`
+                            <tr>
+                                <td class="ps-4 fw-bold">${log.itemName}</td>
+                                <td><span class="text-danger">-${log.quantity}</span></td>
+                                <td><small class="text-muted">${log.reason}</small></td>
+                                <td class="pe-4 text-end small">${new Date(log.date).toLocaleString()}</td>
+                            </tr>
+                        `);
+                    });
+                }
+                $('#historyModal').modal('show');
+            });
+        }
+
+        // 🛰️ SIGNALR: Listen for Low Stock Alerts
+        orderConnection.on("ReceiveLowStockWarning", (data) => {
+            // Play warning sound
+            document.getElementById('warningSound').play().catch(e => console.log("Audio play blocked"));
+
+            Swal.fire({
+                title: '⚠️ Low Stock Alert!',
+                html: `Ingredient <b>${data.itemName}</b> is running low.<br/>Current: ${data.currentStock}${data.unit} (Min: ${data.minLevel}${data.unit})`,
+                icon: 'warning',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: true,
+                confirmButtonText: 'View Inventory',
+                timer: 15000,
+                timerProgressBar: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Admin/Inventory';
+                }
+            });
+        });
+    </script>
+}

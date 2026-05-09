@@ -16,6 +16,7 @@ namespace CafeManagement.Controllers
         private readonly OrderService _orderService;
         private readonly DashboardService _dashboardService;
         private readonly AuthService _authService;
+        private readonly InventoryService _inventoryService;
         private readonly CafeDbContext _context;
         private readonly IWebHostEnvironment _hostEnvironment;
 
@@ -24,6 +25,7 @@ namespace CafeManagement.Controllers
             OrderService orderService,
             DashboardService dashboardService,
             AuthService authService,
+            InventoryService inventoryService,
             CafeDbContext context,
             IWebHostEnvironment hostEnvironment)
         {
@@ -31,6 +33,7 @@ namespace CafeManagement.Controllers
             _orderService = orderService;
             _dashboardService = dashboardService;
             _authService = authService;
+            _inventoryService = inventoryService;
             _context = context;
             _hostEnvironment = hostEnvironment;
         }
@@ -52,6 +55,125 @@ namespace CafeManagement.Controllers
                 Console.WriteLine($"[{DateTime.Now}] Dashboard Error: {ex.Message}");
                 return RedirectToAction("Error", "Home");
             }
+        }
+
+        // 📊 Phase 4: AI & Data Insights
+        public async Task<IActionResult> Analytics() {
+            ViewBag.SalesTrend = await _dashboardService.GetSalesTrendAsync(7);
+            ViewBag.HourlyTraffic = await _dashboardService.GetHourlyTrafficAsync();
+            ViewBag.CategorySales = await _dashboardService.GetCategorySalesAsync();
+            
+            // Real Analytics from Phase 4 Implementation
+            ViewBag.StaffPerformance = await _dashboardService.GetStaffPerformanceAsync();
+            ViewBag.InventoryForecast = await _dashboardService.GetInventoryForecastAsync();
+            ViewBag.FinancialReport = await _dashboardService.GetFinancialReportAsync();
+            ViewBag.AIInsights = await _dashboardService.GetAISmartInsightsAsync();
+
+            return View();
+        }
+
+
+        // 🛰️ Phase 2: Inventory Management
+        public async Task<IActionResult> Inventory() {
+            var items = await _inventoryService.GetAllInventoryAsync();
+            return View(items);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateInventory(int id, decimal quantity) {
+            try {
+                await _inventoryService.UpdateStockAsync(id, quantity);
+                TempData["Success"] = "Inventory updated!";
+            } catch (Exception ex) {
+                TempData["Error"] = ex.Message;
+            }
+            return RedirectToAction("Inventory");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RecordWastage(int id, decimal quantity, string reason) {
+            try {
+                await _inventoryService.RecordWastageAsync(id, quantity, reason);
+                TempData["Success"] = "Wastage recorded successfully.";
+            } catch (Exception ex) {
+                TempData["Error"] = ex.Message;
+            }
+            return RedirectToAction("Inventory");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetWastageHistory() {
+            var history = await _context.WastageLogs
+                .Include(w => w.InventoryItem)
+                .OrderByDescending(w => w.RecordedAt)
+                .Take(20)
+                .Select(w => new {
+                    itemName = w.InventoryItem != null ? w.InventoryItem.Name : "Unknown",
+                    quantity = w.Quantity,
+                    reason = w.Reason,
+                    date = w.RecordedAt
+                })
+                .ToListAsync();
+            return Json(history);
+        }
+
+        // 🛰️ Phase 2: Recipe Management
+        public async Task<IActionResult> ManageRecipe(int id) {
+            var item = await _context.MenuItems
+                .Include(m => m.Recipes)
+                .ThenInclude(r => r.InventoryItem)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            
+            if (item == null) return NotFound();
+            
+            ViewBag.InventoryItems = await _inventoryService.GetAllInventoryAsync();
+            return View(item);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddRecipeItem(int menuItemId, int inventoryItemId, decimal quantity) {
+            try {
+                var recipe = new RecipeItem {
+                    MenuItemId = menuItemId,
+                    InventoryItemId = inventoryItemId,
+                    QuantityRequired = quantity
+                };
+                _context.RecipeItems.Add(recipe);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Ingredient added to recipe.";
+            } catch (Exception ex) { TempData["Error"] = ex.Message; }
+            return RedirectToAction("ManageRecipe", new { id = menuItemId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveRecipeItem(int id) {
+            var recipe = await _context.RecipeItems.FindAsync(id);
+            if (recipe == null) return NotFound();
+            int menuItemId = recipe.MenuItemId;
+            _context.RecipeItems.Remove(recipe);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("ManageRecipe", new { id = menuItemId });
+        }
+
+        // 🛰️ Phase 2: Notification Management
+        [HttpGet]
+        public async Task<IActionResult> GetNotifications() {
+            var notifications = await _context.Notifications
+                .OrderByDescending(n => n.CreatedAt)
+                .Take(10)
+                .ToListAsync();
+            
+            var unreadCount = await _context.Notifications.CountAsync(n => !n.IsRead);
+            
+            return Json(new { notifications, unreadCount });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkNotificationsAsRead() {
+            var unread = await _context.Notifications.Where(n => !n.IsRead).ToListAsync();
+            unread.ForEach(n => n.IsRead = true);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
         public async Task<IActionResult> MenuList(string? search) {
@@ -101,36 +223,41 @@ namespace CafeManagement.Controllers
                     imageUrl = "/images/menu/" + fileName;
                 }
 
+                string categoryColor = !string.IsNullOrEmpty(vm.CategoryColor) && vm.CategoryColor != "#6c757d" 
+                    ? vm.CategoryColor 
+                    : GetCategoryColor(finalCategory);
+
                 MenuItem item = finalType switch {
                     "Beverage" => new Beverage {
                         Name = vm.Name, Price = vm.Price, Description = vm.Description,
-                        Category = finalCategory, CategoryColor = vm.CategoryColor, ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl,
-                        IsAvailable = vm.IsAvailable, IsHot = vm.IsHot, Size = vm.Size
+                        Category = finalCategory, CategoryColor = categoryColor, ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl,
+                        IsAvailable = vm.IsAvailable, IsHot = vm.IsHot, Size = vm.Size, OutletId = 1
                     },
                     "Food" => new Food {
                         Name = vm.Name, Price = vm.Price, Description = vm.Description,
-                        Category = finalCategory, CategoryColor = vm.CategoryColor, ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl,
+                        Category = finalCategory, CategoryColor = categoryColor, ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl,
                         IsAvailable = vm.IsAvailable,
                         PreparationTimeMinutes = vm.PreparationTimeMinutes,
-                        IsVegetarian = vm.IsVegetarian
+                        IsVegetarian = vm.IsVegetarian, OutletId = 1
                     },
                     "Dessert" => new Dessert {
                         Name = vm.Name, Price = vm.Price, Description = vm.Description,
-                        Category = finalCategory, CategoryColor = vm.CategoryColor, ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl,
+                        Category = finalCategory, CategoryColor = categoryColor, ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl,
                         IsAvailable = vm.IsAvailable, Allergens = vm.Allergens,
-                        IsSeasonalItem = vm.IsSeasonalItem
+                        IsSeasonalItem = vm.IsSeasonalItem, OutletId = 1
                     },
                     "Snack" => new Snack {
                         Name = vm.Name, Price = vm.Price, Description = vm.Description,
-                        Category = finalCategory, CategoryColor = vm.CategoryColor, ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl,
-                        IsAvailable = vm.IsAvailable
+                        Category = finalCategory, CategoryColor = categoryColor, ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl,
+                        IsAvailable = vm.IsAvailable, OutletId = 1
                     },
-                    _ => new Snack { // Default for "Add New" Item Type
+                    _ => new Snack {
                         Name = vm.Name, Price = vm.Price, Description = vm.Description,
-                        Category = finalCategory, CategoryColor = vm.CategoryColor, ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl,
-                        IsAvailable = vm.IsAvailable
+                        Category = finalCategory, CategoryColor = categoryColor, ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl,
+                        IsAvailable = vm.IsAvailable, OutletId = 1
                     }
                 };
+
                 await _menuService.AddItemAsync(item);
                 TempData["Success"] = "Item added successfully!";
                 return RedirectToAction("MenuList");
@@ -151,7 +278,6 @@ namespace CafeManagement.Controllers
                     .GroupBy(i => i.Category)
                     .ToDictionary(g => g.Key, g => g.First().CategoryColor);
 
-                // Map to ViewModel
                 var vm = new AddItemViewModel {
                     ItemType = item.GetType().Name,
                     Name = item.Name, Price = item.Price,
@@ -178,7 +304,11 @@ namespace CafeManagement.Controllers
                 string finalCategory = vm.Category == "Add New" ? vm.NewCategory ?? "General" : vm.Category;
                 string finalType = vm.ItemType == "Add New" ? vm.NewItemType ?? "Snack" : vm.ItemType;
                 
-                string imageUrl = "";
+                var existingItem = await _menuService.GetByIdAsync(id);
+                if (existingItem == null) throw new ItemNotFoundException("Item not found.");
+
+                // Keep existing image by default
+                string imageUrl = existingItem.ImageUrl; 
                 if (vm.ImageFile != null) {
                     string uploads = Path.Combine(_hostEnvironment.WebRootPath, "images", "menu");
                     if (!Directory.Exists(uploads)) Directory.CreateDirectory(uploads);
@@ -189,29 +319,41 @@ namespace CafeManagement.Controllers
                     imageUrl = "/images/menu/" + fileName;
                 }
 
+                // If color is changed, update ALL items in this category to keep it "Category Wise"
+                string categoryColor = vm.CategoryColor ?? existingItem.CategoryColor;
+                if (categoryColor != existingItem.CategoryColor) {
+                    var categoryItems = await _context.MenuItems.Where(m => m.Category == finalCategory).ToListAsync();
+                    foreach(var ci in categoryItems) {
+                        ci.CategoryColor = categoryColor;
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
                 MenuItem item = finalType switch {
                     "Beverage" => new Beverage { Id = id, Name = vm.Name, Price = vm.Price,
-                        Description = vm.Description, Category = finalCategory, CategoryColor = vm.CategoryColor,
+                        Description = vm.Description, Category = finalCategory, CategoryColor = categoryColor,
                         ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl, IsAvailable = vm.IsAvailable,
-                        IsHot = vm.IsHot, Size = vm.Size },
+                        IsHot = vm.IsHot, Size = vm.Size, OutletId = existingItem.OutletId },
                     "Food" => new Food { Id = id, Name = vm.Name, Price = vm.Price,
-                        Description = vm.Description, Category = finalCategory, CategoryColor = vm.CategoryColor,
+                        Description = vm.Description, Category = finalCategory, CategoryColor = categoryColor,
                         ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl, IsAvailable = vm.IsAvailable,
-                        PreparationTimeMinutes = vm.PreparationTimeMinutes, IsVegetarian = vm.IsVegetarian },
+                        PreparationTimeMinutes = vm.PreparationTimeMinutes, IsVegetarian = vm.IsVegetarian, OutletId = existingItem.OutletId },
                     "Dessert" => new Dessert { Id = id, Name = vm.Name, Price = vm.Price,
-                        Description = vm.Description, Category = finalCategory, CategoryColor = vm.CategoryColor,
+                        Description = vm.Description, Category = finalCategory, CategoryColor = categoryColor,
                         ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl, IsAvailable = vm.IsAvailable,
-                        Allergens = vm.Allergens, IsSeasonalItem = vm.IsSeasonalItem },
+                        Allergens = vm.Allergens, IsSeasonalItem = vm.IsSeasonalItem, OutletId = existingItem.OutletId },
                     "Snack" => new Snack { Id = id, Name = vm.Name, Price = vm.Price,
-                        Description = vm.Description, Category = finalCategory, CategoryColor = vm.CategoryColor,
-                        ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl, IsAvailable = vm.IsAvailable },
+                        Description = vm.Description, Category = finalCategory, CategoryColor = categoryColor,
+                        ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl, IsAvailable = vm.IsAvailable, OutletId = existingItem.OutletId },
                     "Special" => new Special { Id = id, Name = vm.Name, Price = vm.Price,
-                        Description = vm.Description, Category = finalCategory, CategoryColor = vm.CategoryColor,
-                        ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl, IsAvailable = vm.IsAvailable },
+                        Description = vm.Description, Category = finalCategory, CategoryColor = categoryColor,
+                        ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl, IsAvailable = vm.IsAvailable, OutletId = existingItem.OutletId },
                     _ => new Snack { Id = id, Name = vm.Name, Price = vm.Price,
-                        Description = vm.Description, Category = finalCategory, CategoryColor = vm.CategoryColor,
-                        ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl, IsAvailable = vm.IsAvailable }
+                        Description = vm.Description, Category = finalCategory, CategoryColor = categoryColor,
+                        ImageEmoji = vm.ImageEmoji, ImageUrl = imageUrl, IsAvailable = vm.IsAvailable, OutletId = existingItem.OutletId }
                 };
+
+
                 await _menuService.UpdateItemAsync(item);
                 TempData["Success"] = "Item updated!";
                 return RedirectToAction("MenuList");
@@ -297,7 +439,6 @@ namespace CafeManagement.Controllers
             if (!ModelState.IsValid) return View(vm);
             try {
                 await _authService.RegisterAsync(vm.Name, vm.Email, vm.Password);
-                // Set role to Staff
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == vm.Email);
                 if (user != null) { user.Role = UserRole.Staff; await _context.SaveChangesAsync(); }
                 TempData["Success"] = "Staff added!";
@@ -327,16 +468,40 @@ namespace CafeManagement.Controllers
         public async Task<IActionResult> TableList() =>
             View(await _context.CafeTables.ToListAsync());
 
+        // 🏢 Phase 5: Multi-Outlet Management
+        public async Task<IActionResult> OutletList() =>
+            View(await _context.Outlets.Include(o => o.Tables).Include(o => o.MenuItems).ToListAsync());
+
+        [HttpGet] public IActionResult AddOutlet() => View();
+
         [HttpPost]
-        public async Task<IActionResult> UpdateTableStatus(int id, TableStatus status) {
-            try {
-                var table = await _context.CafeTables.FindAsync(id);
-                if (table == null) throw new ItemNotFoundException("Table not found.");
-                table.Status = status;
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "Table status updated.";
-            } catch (Exception ex) { TempData["Error"] = ex.Message; }
-            return RedirectToAction("TableList");
+        public async Task<IActionResult> AddOutlet(CafeOutlet outlet) {
+            if (!ModelState.IsValid) return View(outlet);
+            _context.Outlets.Add(outlet);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "New outlet added successfully!";
+            return RedirectToAction("OutletList");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteOutlet(int id) {
+            var outlet = await _context.Outlets.FindAsync(id);
+            if (outlet == null) return NotFound();
+            _context.Outlets.Remove(outlet);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("OutletList");
+        }
+
+        private string GetCategoryColor(string category) {
+            return category.ToLower().Trim() switch {
+                "beverages" or "beverage" or "drink" or "drinks" => "#673ab7", // Deep Purple
+                "desserts" or "dessert" or "sweet" or "sweets" => "#e91e63",   // Pink
+                "food" or "foods" or "meal" or "meals" => "#4caf50",          // Green
+                "snacks" or "snack" => "#ff9800",                             // Orange
+                "specials" or "special" => "#00bcd4",                         // Cyan
+                _ => "#607d8b"                                                // Blue Grey
+            };
         }
     }
 }
+

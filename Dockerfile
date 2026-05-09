@@ -1,22 +1,22 @@
-# Build Stage
+# 🐳 Phase 5.3: Professional Dockerfile for CafeManagement
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+WORKDIR /app
 
-# Copy csproj and restore dependencies
-COPY ["CafeManagement.csproj", "./"]
-RUN dotnet restore "CafeManagement.csproj"
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
 
 # Copy everything else and build
-COPY . .
-RUN dotnet publish "CafeManagement.csproj" -c Release -o /app/publish /p:UseAppHost=false
+COPY . ./
+RUN dotnet publish -c Release -o out
 
-# Runtime Stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=build /app/publish .
+COPY --from=build /app/out .
 
-# Expose port 8080 (Render's default)
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
+# Expose ports for web and SignalR
+EXPOSE 80
+EXPOSE 443
 
 ENTRYPOINT ["dotnet", "CafeManagement.dll"]

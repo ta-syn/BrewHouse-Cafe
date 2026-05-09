@@ -1,0 +1,90 @@
+@model IEnumerable<CafeManagement.Models.CafeOutlet>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Manage Outlets (Multi-Outlet Support)";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h4 class="fw-bold mb-0 text-coffee">🏢 Multi-Outlet Management</h4>
+            <p class="text-muted small mb-0">Scale your business across multiple locations with ease.</p>
+        </div>
+        <div class="col-auto">
+            <a asp-action="AddOutlet" class="btn btn-coffee">
+                <i class="fas fa-plus me-2"></i> Add New Branch
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var outlet in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                    @if (!string.IsNullOrEmpty(outlet.ImageUrl))
+                    {
+                        <div class="ratio ratio-16x9">
+                            <img src="@outlet.ImageUrl" class="object-fit-cover" alt="@outlet.Name">
+                        </div>
+                    }
+                    <div class="card-header bg-dark text-white p-3 border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-bold"><i class="fas fa-store me-2"></i> @outlet.Name</h6>
+                            <span class="badge @(outlet.IsActive ? "bg-success" : "bg-danger") rounded-pill">@(outlet.IsActive ? "Active" : "Inactive")</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <div class="text-muted small mb-1"><i class="fas fa-map-marker-alt me-1"></i> Location</div>
+                            <div class="fw-semibold">@outlet.Location</div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="text-muted small mb-1"><i class="fas fa-phone me-1"></i> Contact</div>
+                            <div class="fw-semibold">@outlet.ContactNumber</div>
+                        </div>
+                        
+                        <div class="row g-2 mb-4">
+                            <div class="col-6">
+                                <div class="p-2 bg-light rounded-3 text-center">
+                                    <div class="h5 mb-0 fw-bold">@outlet.Tables.Count</div>
+                                    <div class="small text-muted">Tables</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 bg-light rounded-3 text-center">
+                                    <div class="h5 mb-0 fw-bold">@outlet.MenuItems.Count</div>
+                                    <div class="small text-muted">Menu Items</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-secondary btn-sm flex-grow-1">Manage Menu</button>
+                            <button class="btn btn-outline-secondary btn-sm flex-grow-1">View Orders</button>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white p-3 border-top-0 d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Established: @outlet.CreatedAt.ToString("MMM yyyy")</small>
+                        <form asp-action="DeleteOutlet" asp-route-id="@outlet.Id" method="post" onsubmit="return confirm('Are you sure you want to delete this branch? All associated data will be lost.');">
+                            <button type="submit" class="btn btn-link text-danger p-0 border-0 shadow-none">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <div class="bg-light d-inline-block p-4 rounded-circle mb-4">
+                <i class="fas fa-store-slash fa-4x text-muted opacity-25"></i>
+            </div>
+            <h5 class="text-muted">No branches found. Start by adding your first outlet!</h5>
+        </div>
+    }
+</div>

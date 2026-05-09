@@ -7,6 +7,8 @@ using CafeManagement.Models.Session;
 using CafeManagement.Services;
 using CafeManagement.Filters;
 using CafeManagement.Exceptions;
+using Microsoft.AspNetCore.SignalR;
+using CafeManagement.Hubs;
 using System.Text.Json;
 
 namespace CafeManagement.Controllers
@@ -16,11 +18,13 @@ namespace CafeManagement.Controllers
         private readonly OrderService _orderService;
         private readonly MenuService _menuService;
         private readonly CafeDbContext _context;
+        private readonly IHubContext<OrderHub> _hubContext;
 
-        public StaffController(OrderService orderService, MenuService menuService, CafeDbContext context) {
+        public StaffController(OrderService orderService, MenuService menuService, CafeDbContext context, IHubContext<OrderHub> hubContext) {
             _orderService = orderService;
             _menuService = menuService;
             _context = context;
+            _hubContext = hubContext;
         }
 
         public async Task<IActionResult> Dashboard() {
@@ -41,15 +45,40 @@ namespace CafeManagement.Controllers
         public async Task<IActionResult> ActiveOrders() =>
             View(await _orderService.GetActiveOrdersAsync());
 
+        public async Task<IActionResult> KDS() =>
+            View(await _orderService.GetActiveOrdersAsync());
+
+        public async Task<IActionResult> OrderDetail(int id) {
+            try {
+                var order = await _orderService.GetOrderByIdAsync(id);
+                if (order == null) throw new ItemNotFoundException("Order not found.");
+                return View(order);
+            } catch (Exception ex) {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Dashboard");
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> UpdateStatus(int orderId, string status) {
             try {
                 if (!Enum.TryParse<OrderStatus>(status, out var orderStatus))
-                    return Json(new { success = false, message = "Invalid status." });
+                    throw new OrderException("Invalid status.");
+                
                 await _orderService.UpdateStatusAsync(orderId, orderStatus);
-                return Json(new { success = true, newStatus = status });
+
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest") {
+                    return Json(new { success = true, newStatus = status });
+                }
+                
+                TempData["Success"] = "Order status updated!";
+                return RedirectToAction("OrderDetail", new { id = orderId });
             } catch (Exception ex) {
-                return Json(new { success = false, message = ex.Message });
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest") {
+                    return Json(new { success = false, message = ex.Message });
+                }
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Dashboard");
             }
         }
 
@@ -65,6 +94,14 @@ namespace CafeManagement.Controllers
                 if (table == null) throw new ItemNotFoundException("Table not found.");
                 table.Status = tableStatus;
                 await _context.SaveChangesAsync();
+
+                // 🛰️ SIGNALR: Sync Table Status
+                await _hubContext.Clients.All.SendAsync("ReceiveTableUpdate", new { 
+                    tableId = table.Id, 
+                    status = tableStatus.ToString(),
+                    tableNumber = table.TableNumber 
+                });
+
                 TempData["Success"] = "Table updated.";
             } catch (Exception ex) { TempData["Error"] = ex.Message; }
             return RedirectToAction("TableOverview");
@@ -79,7 +116,6 @@ namespace CafeManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> WalkInOrder(string itemsJson, int? tableId, string? notes, string customerName = "Walk-in Customer") {
             try {
-                // FIX: userId = null for walk-in, IsWalkIn = true
                 var cartItems = JsonSerializer.Deserialize<List<CartItem>>(itemsJson);
                 if (cartItems == null || !cartItems.Any())
                     throw new OrderException("No items selected.");

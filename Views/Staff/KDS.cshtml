@@ -1,0 +1,176 @@
+@model IEnumerable<CafeManagement.Models.Order>
+@{
+    ViewData["Title"] = "Kitchen Display System";
+    Layout = "_StaffLayout";
+}
+
+<div class="container-fluid px-4 mt-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">👨‍🍳 Kitchen Display System</h2>
+            <p class="text-muted">Real-time order tracking and management</p>
+        </div>
+        <div class="d-flex gap-2">
+            <span class="badge bg-success-light text-success px-3 py-2 rounded-pill border border-success border-opacity-10">
+                <i class="fas fa-circle-check me-1"></i> Live
+            </span>
+            <div id="clock" class="fw-bold text-coffee bg-white px-3 py-2 rounded-pill shadow-sm border border-coffee border-opacity-10"></div>
+        </div>
+    </div>
+
+    <div class="row g-4" id="kds-order-grid">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <div class="display-1 text-muted opacity-25 mb-3">☕</div>
+                <h3>No active orders. Time for a coffee break?</h3>
+            </div>
+        }
+        else
+        {
+            @foreach (var order in Model)
+            {
+                var timeDiff = (DateTime.UtcNow.AddHours(6) - order.CreatedAt).TotalMinutes;
+                var borderColor = timeDiff > 15 ? "#dc3545" : (timeDiff > 10 ? "#ffc107" : "#198754");
+                var bgColor = timeDiff > 15 ? "#fff5f5" : (timeDiff > 10 ? "#fffdec" : "#f5fff7");
+                var isNew = timeDiff < 1; // Order placed less than 1 minute ago
+
+
+                <div class="col-xl-3 col-lg-4 col-md-6 order-card-wrapper @(isNew ? "new-order-glow" : "")" data-order-id="@order.Id" data-created-at="@order.CreatedAt.ToString("o")">
+
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-all hover-shadow" style="border-top: 5px solid @borderColor !important; background-color: @bgColor">
+                        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between">
+                            <div>
+                                <h5 class="fw-800 mb-0">#@order.Id</h5>
+                                <span class="badge @(order.Status == CafeManagement.Models.Enums.OrderStatus.Pending ? "bg-warning" : "bg-primary") rounded-pill">
+                                    @order.Status
+                                </span>
+                            </div>
+                            <div class="text-end">
+                                <div class="timer fw-bold fs-5" style="color: @borderColor">
+                                    <i class="far fa-clock me-1"></i> <span class="timer-display">0m</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body px-4">
+                            <div class="mb-3">
+                                <small class="text-muted text-uppercase fw-bold letter-spacing-1">Customer</small>
+                                <div class="fw-bold">@order.CustomerName</div>
+                                @if (order.TableId.HasValue)
+                                {
+                                    <span class="badge bg-coffee text-white small">Table @order.Table.TableNumber</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary text-white small">Walk-in</span>
+                                }
+                            </div>
+
+                            <hr class="opacity-10">
+
+                            <div class="order-items-list mb-3">
+                                @foreach (var item in order.OrderItems)
+                                {
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span><span class="fw-bold text-coffee">@item.Quantity x</span> @item.ItemName</span>
+                                    </div>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(order.Notes))
+                            {
+                                <div class="alert alert-warning py-2 px-3 small border-0 rounded-3 mb-0">
+                                    <i class="fas fa-info-circle me-1"></i> <b>Note:</b> @order.Notes
+                                </div>
+                            }
+                        </div>
+
+                        <div class="card-footer bg-transparent border-0 p-4 pt-0 mt-auto">
+                            @if (order.Status == CafeManagement.Models.Enums.OrderStatus.Pending)
+                            {
+                                <button onclick="updateKdsStatus(@order.Id, 'Preparing')" class="btn btn-coffee w-100 rounded-3 fw-bold">
+                                    <i class="fas fa-play me-2"></i> Start Preparing
+                                </button>
+                            }
+                            else if (order.Status == CafeManagement.Models.Enums.OrderStatus.Preparing)
+                            {
+                                <button onclick="updateKdsStatus(@order.Id, 'Ready')" class="btn btn-success w-100 rounded-3 fw-bold">
+                                    <i class="fas fa-check-circle me-2"></i> Mark Ready
+                                </button>
+                            }
+                            else if (order.Status == CafeManagement.Models.Enums.OrderStatus.Ready)
+                            {
+                                <button onclick="updateKdsStatus(@order.Id, 'Served')" class="btn btn-outline-primary w-100 rounded-3 fw-bold">
+                                    <i class="fas fa-concierge-bell me-2"></i> Complete Service
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    .new-order-glow {
+        animation: glow-pulse 2s infinite;
+    }
+    @@keyframes glow-pulse {
+        0% { transform: scale(1); box-shadow: 0 0 0 rgba(25, 135, 84, 0.4); }
+        50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(25, 135, 84, 0.6); }
+        100% { transform: scale(1); box-shadow: 0 0 0 rgba(25, 135, 84, 0.4); }
+    }
+
+</style>
+
+@section Scripts {
+
+    <script>
+        function updateKdsStatus(orderId, status) {
+            $.post('/Staff/UpdateStatus', { orderId: orderId, status: status }, function(data) {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            });
+        }
+
+        function updateTimers() {
+            const now = new Date();
+            $('.order-card-wrapper').each(function() {
+                const createdAt = new Date($(this).data('created-at'));
+                const diffMs = now - createdAt;
+                const diffMin = Math.floor(diffMs / 60000);
+                $(this).find('.timer-display').text(diffMin + 'm');
+
+                // Dynamic color update
+                const card = $(this).find('.card');
+                const timerText = $(this).find('.timer');
+                if (diffMin > 15) {
+                    card.css('border-top', '5px solid #dc3545', 'important');
+                    card.css('background-color', '#fff5f5');
+                    timerText.css('color', '#dc3545');
+                } else if (diffMin > 10) {
+                    card.css('border-top', '5px solid #ffc107', 'important');
+                    card.css('background-color', '#fffdec');
+                    timerText.css('color', '#ffc107');
+                }
+            });
+        }
+
+        function updateClock() {
+            const now = new Date();
+            $('#clock').text(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        }
+
+        $(document).ready(function() {
+            updateTimers();
+            updateClock();
+            setInterval(updateTimers, 10000);
+            setInterval(updateClock, 1000);
+        });
+    </script>
+}

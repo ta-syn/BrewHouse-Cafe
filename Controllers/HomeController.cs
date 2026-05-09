@@ -17,8 +17,25 @@ namespace CafeManagement.Controllers
             return View(items.Take(6).ToList());
         }
 
-        public async Task<IActionResult> Menu(string? category, string? search) {
+        public async Task<IActionResult> Menu(string? category, string? search, string? tid) {
+            // 📱 Phase 3: QR Ordering Detection
+            if (!string.IsNullOrEmpty(tid)) {
+                try {
+                    // Decrypt tid (Base64 decode)
+                    byte[] data = Convert.FromBase64String(tid);
+                    string decodedString = System.Text.Encoding.UTF8.GetString(data);
+                    if (decodedString.StartsWith("table_")) {
+                        string idStr = decodedString.Replace("table_", "");
+                        if (int.TryParse(idStr, out int tableId)) {
+                            HttpContext.Session.SetInt32("AutoTableId", tableId);
+                            TempData["Info"] = $"Welcome! You are ordering from Table {tableId}.";
+                        }
+                    }
+                } catch { /* Invalid QR link */ }
+            }
+
             IEnumerable<MenuItem> items;
+
             if (!string.IsNullOrEmpty(search))
                 items = await _menuService.SearchAsync(search);
             else if (string.IsNullOrEmpty(category))

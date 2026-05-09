@@ -2,6 +2,8 @@
 @{
     Layout = "_CustomerLayout";
     ViewData["Title"] = "Checkout";
+    bool isLoggedIn = Context.Session.GetString("UserId") != null;
+    int? autoTableId = ViewBag.AutoTableId;
 }
 
 <div class="container mt-5">
@@ -59,30 +61,46 @@
 
             <div class="card border-0 shadow-sm rounded-4 p-4">
                 <form asp-action="Checkout" method="post">
+                    @if (!isLoggedIn)
+                    {
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-user me-2"></i> Your Name (Guest Checkout)</label>
+                            <input type="text" name="guestName" class="form-control border-2 rounded-pill px-4" placeholder="Enter your name..." required />
+                            <div class="form-text small mt-1">Ordering as a guest. <a asp-controller="Auth" asp-action="Login">Login</a> to save order history.</div>
+                        </div>
+                    }
+
                     <div class="mb-4">
                         <label class="form-label fw-bold"><i class="fas fa-chair me-2"></i> Choose Your Table</label>
+                        @if (autoTableId.HasValue)
+                        {
+                            <div class="alert alert-success border-0 rounded-4 py-2 small mb-3">
+                                <i class="fas fa-qrcode me-2"></i> Auto-selected Table from QR Scan.
+                            </div>
+                        }
                         <div class="table-grid mb-3">
-                            <input type="hidden" name="tableId" id="selectedTableId" value="" />
+                            <input type="hidden" name="tableId" id="selectedTableId" value="@(autoTableId ?? 0)" />
                             
                             @if (ViewBag.Tables != null)
                             {
                                 foreach (var table in (List<CafeManagement.Models.CafeTable>)ViewBag.Tables)
                                 {
+                                    bool isAutoSelected = autoTableId == table.Id;
                                     var statusClass = table.Status switch {
                                         CafeManagement.Models.Enums.TableStatus.Available => "available",
-                                        CafeManagement.Models.Enums.TableStatus.Occupied => "occupied disabled",
+                                        CafeManagement.Models.Enums.TableStatus.Occupied => isAutoSelected ? "available" : "occupied disabled",
                                         CafeManagement.Models.Enums.TableStatus.Reserved => "reserved disabled",
                                         _ => ""
                                     };
                                     
                                     var labelClass = table.Status switch {
                                         CafeManagement.Models.Enums.TableStatus.Available => "status-available",
-                                        CafeManagement.Models.Enums.TableStatus.Occupied => "status-occupied",
+                                        CafeManagement.Models.Enums.TableStatus.Occupied => isAutoSelected ? "status-available" : "status-occupied",
                                         CafeManagement.Models.Enums.TableStatus.Reserved => "status-reserved",
                                         _ => ""
                                     };
 
-                                    <div class="table-item @statusClass" data-table-id="@table.Id" onclick="selectTable(this)" title="@table.Status">
+                                    <div class="table-item @statusClass @(isAutoSelected ? "selected" : "")" data-table-id="@table.Id" onclick="selectTable(this)" title="@table.Status">
                                         <div class="table-status-dot @labelClass"></div>
                                         <i class="fas fa-couch table-icon @labelClass"></i>
                                         <span class="table-number">Table @table.TableNumber</span>

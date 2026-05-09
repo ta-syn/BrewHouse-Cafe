@@ -21,6 +21,13 @@ namespace CafeManagement.Controllers
                     ModelState.AddModelError("", "Invalid email or password.");
                     return View(model);
                 }
+                
+                // 🛑 Check if Email is Verified
+                if (!user.IsEmailVerified) {
+                    ModelState.AddModelError("", "Your email is not verified. Please check your inbox.");
+                    return View(model);
+                }
+
                 // Set session
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
                 HttpContext.Session.SetString("UserName", user.Name);
@@ -45,14 +52,8 @@ namespace CafeManagement.Controllers
             if (!ModelState.IsValid) return View(model);
             try {
                 await _authService.RegisterAsync(model.Name, model.Email, model.Password);
-                // Auto-login after register
-                var user = await _authService.LoginAsync(model.Email, model.Password);
-                if (user != null) {
-                    HttpContext.Session.SetString("UserId", user.Id.ToString());
-                    HttpContext.Session.SetString("UserName", user.Name);
-                    HttpContext.Session.SetString("UserRole", user.Role.ToString());
-                }
-                return RedirectToAction("Menu", "Home");
+                TempData["SuccessMessage"] = "Registration successful! Please check your email to verify your account before logging in.";
+                return RedirectToAction("Login");
             } catch (DuplicateEmailException ex) {
                 ModelState.AddModelError("Email", ex.Message);
                 return View(model);
@@ -64,6 +65,18 @@ namespace CafeManagement.Controllers
 
         public IActionResult Logout() {
             HttpContext.Session.Clear();  // FIX: clears cart + user session
+            return RedirectToAction("Login");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> VerifyEmail(string token) {
+            if (string.IsNullOrEmpty(token)) return RedirectToAction("Login");
+            var result = await _authService.VerifyEmailAsync(token);
+            if (result) {
+                TempData["SuccessMessage"] = "Email verified successfully! You can now login.";
+            } else {
+                TempData["ErrorMessage"] = "Invalid or expired verification token.";
+            }
             return RedirectToAction("Login");
         }
     }

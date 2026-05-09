@@ -174,17 +174,18 @@
                 <a asp-action="OrderHistory" class="btn btn-outline-dark rounded-pill px-5 border-2 fw-bold me-2">Back to History</a>
                 <a asp-controller="Home" asp-action="Menu" class="btn btn-coffee rounded-pill px-5 fw-bold shadow">Order More</a>
                 <div class="mt-4">
-                    <p class="text-muted small"><i class="fas fa-sync fa-spin me-2 text-coffee"></i> Auto-refreshing in 30s...</p>
+                    <p class="text-muted small"><i class="fas fa-circle-check me-2 text-success"></i> Real-time tracking active</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>window.CURRENT_ORDER_ID = "@Model.Id";</script>
+
 
 @section Scripts {
     <script>
-        setTimeout(function() {
-            location.reload();
-        }, 30000);
+        console.log("Real-time tracking enabled for order #@Model.Id");
     </script>
 }
+

@@ -105,7 +105,7 @@ namespace CafeManagement.Controllers
             return Json(new { count = cart.Sum(c => c.Quantity) });
         }
 
-        [SessionAuthorize("Customer")]
+        // 📱 Phase 3: Guest Checkout Support (Removed SessionAuthorize)
         public async Task<IActionResult> Checkout() {
             var cart = GetCart();
             if (!cart.Any()) return RedirectToAction("ViewCart");
@@ -116,27 +116,44 @@ namespace CafeManagement.Controllers
             ViewBag.Total = ViewBag.Subtotal - (ViewBag.Subtotal * discountPct / 100);
             ViewBag.Tables = await _context.CafeTables.OrderBy(t => t.TableNumber).ToListAsync();
             
+            // Auto-select table if coming from QR
+            ViewBag.AutoTableId = HttpContext.Session.GetInt32("AutoTableId");
+            
             return View(cart);
         }
 
-        [HttpPost][SessionAuthorize("Customer")]
-        public async Task<IActionResult> Checkout(string? notes, int? tableId) {
+        [HttpPost]
+        public async Task<IActionResult> Checkout(string? notes, int? tableId, string? guestName) {
             try {
                 var cart = GetCart();
                 if (!cart.Any()) return RedirectToAction("ViewCart");
                 
-                int userId = int.Parse(HttpContext.Session.GetString("UserId")!);
-                string userName = HttpContext.Session.GetString("UserName") ?? "Customer";
+                int? userId = null;
+                string userName = guestName ?? "Guest Customer";
+
+                if (HttpContext.Session.GetString("UserId") != null) {
+                    userId = int.Parse(HttpContext.Session.GetString("UserId")!);
+                    userName = HttpContext.Session.GetString("UserName") ?? userName;
+                }
+                
                 string? discountCode = HttpContext.Session.GetString("DiscountCode");
                 
+                // If tableId is null, check if we have it in session from QR
+                if (!tableId.HasValue) {
+                    tableId = HttpContext.Session.GetInt32("AutoTableId");
+                }
+
                 var order = await _orderService.CreateOrderAsync(userId, userName, cart, discountCode, tableId, notes);
                 
                 // Clear cart and discount after order
                 HttpContext.Session.Remove("Cart");
                 HttpContext.Session.Remove("DiscountCode");
                 HttpContext.Session.Remove("DiscountPercent");
-                
-                return RedirectToAction("OrderConfirmation", "Customer", new { id = order.Id });
+                // HttpContext.Session.Remove("AutoTableId"); // Keep it for the session in case they order more
+
+                // For Guests, we need to allow them to track their order without login
+                // We'll pass a flag or just redirect to TrackOrder which we'll also open to guests
+                return RedirectToAction("TrackOrder", "Customer", new { id = order.Id, guest = userId == null });
             } catch (Exception ex) {
                 TempData["Error"] = ex.Message;
                 return RedirectToAction("ViewCart");

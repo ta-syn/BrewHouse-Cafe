@@ -1,0 +1,106 @@
+@model CafeManagement.Models.MenuItem
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Manage Recipe";
+    var inventoryItems = ViewBag.InventoryItems as IEnumerable<CafeManagement.Models.InventoryItem>;
+}
+
+<div class="container-fluid px-4 py-2">
+    <div class="mb-4">
+        <a asp-action="MenuList" class="btn btn-sm btn-outline-secondary rounded-pill px-3 mb-3">
+            <i class="fas fa-arrow-left me-1"></i> Back to Menu
+        </a>
+        <h2 class="fw-bold text-coffee mb-1">📝 Recipe Mapping: @Model.Name</h2>
+        <p class="text-muted small">Define ingredients required for this item.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recipe Items List -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white py-3 px-4 border-0">
+                    <h5 class="fw-bold mb-0">Ingredients List</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Ingredient</th>
+                                <th>Quantity Required</th>
+                                <th class="text-end pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.Recipes.Any())
+                            {
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted">
+                                        No ingredients mapped yet. Add one from the right panel.
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var recipe in Model.Recipes)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <span class="fw-bold">@recipe.InventoryItem?.Name</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
+                                            @recipe.QuantityRequired @recipe.InventoryItem?.Unit
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <form asp-action="RemoveRecipeItem" method="post" onsubmit="return confirm('Remove this ingredient?');">
+                                            <input type="hidden" name="id" value="@recipe.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger border-0">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Ingredient Panel -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold mb-4">Add Ingredient</h5>
+                <form asp-action="AddRecipeItem" method="post">
+                    <input type="hidden" name="menuItemId" value="@Model.Id" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Select Ingredient</label>
+                        <select name="inventoryItemId" class="form-select rounded-pill" required>
+                            <option value="">-- Select --</option>
+                            @foreach (var inv in inventoryItems)
+                            {
+                                <option value="@inv.Id">@inv.Name (@inv.Unit)</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Quantity Required</label>
+                        <input type="number" step="0.01" name="quantity" class="form-control rounded-pill" placeholder="e.g. 18.5" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-coffee w-100 rounded-pill py-2 shadow">
+                        <i class="fas fa-plus-circle me-2"></i> Add to Recipe
+                    </button>
+                </form>
+
+                <div class="mt-4 p-3 bg-light rounded-4">
+                    <h6 class="small fw-bold text-muted text-uppercase mb-2"><i class="fas fa-info-circle me-1"></i> How it works</h6>
+                    <p class="small text-muted mb-0">
+                        When this item is marked as "Served", the system will automatically deduct these quantities from your inventory stock.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

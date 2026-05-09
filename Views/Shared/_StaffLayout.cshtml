@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="/css/site.css" rel="stylesheet">
+    <script>window.USER_ROLE = "Staff";</script>
 </head>
 <body>
     <div id="wrapper" class="d-flex">
@@ -18,6 +19,11 @@
                 <li class="nav-item">
                     <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Dashboard" ? "active" : "")" asp-controller="Staff" asp-action="Dashboard">
                         <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "KDS" ? "active" : "")" asp-controller="Staff" asp-action="KDS">
+                        <i class="fas fa-desktop"></i> Kitchen (KDS)
                     </a>
                 </li>
                 <li class="nav-item">
@@ -51,6 +57,10 @@
                             <span class="text-white-50 small d-block mb-1" style="line-height: 1;">Logged in as</span>
                             <span class="fw-bold text-white">@Context.Session.GetString("UserName")</span>
                         </div>
+                        <div class="connection-status-pill mx-2 px-3 py-1 rounded-pill bg-dark d-flex align-items-center justify-content-center">
+                            <span id="connection-dot" class="connection-dot disconnected"></span>
+                            <span id="connection-text" class="text-white-50 small ms-2">Offline</span>
+                        </div>
                     </li>
                 </div>
             </ul>
@@ -79,6 +89,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script src="/js/site.js?v=@DateTime.Now.Ticks"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

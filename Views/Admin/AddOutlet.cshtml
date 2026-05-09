@@ -1,0 +1,53 @@
+@model CafeManagement.Models.CafeOutlet
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Add New Branch";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-dark text-white p-4 border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-plus-circle me-2"></i> Register New Branch</h5>
+                    <p class="text-white-50 small mb-0 mt-1">Fill in the details to expand your cafe empire.</p>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="AddOutlet" method="post">
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label fw-bold">Branch Name</label>
+                            <input asp-for="Name" class="form-control form-control-lg border-0 bg-light" placeholder="e.g. BrewHouse Dhanmondi" required>
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Location" class="form-label fw-bold">Location / Address</label>
+                            <textarea asp-for="Location" class="form-control border-0 bg-light" rows="3" placeholder="Full address of the new outlet..." required></textarea>
+                            <span asp-validation-for="Location" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="ContactNumber" class="form-label fw-bold">Contact Number</label>
+                                <input asp-for="ContactNumber" class="form-control border-0 bg-light" placeholder="017XXXXXXXX" required>
+                                <span asp-validation-for="ContactNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Initial Status</label>
+                                <select asp-for="IsActive" class="form-select border-0 bg-light">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive / Under Construction</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 pt-2">
+                            <a asp-action="OutletList" class="btn btn-light px-4">Cancel</a>
+                            <button type="submit" class="btn btn-coffee px-5 flex-grow-1">Create Branch</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="/css/site.css" rel="stylesheet">
+    <script>window.USER_ROLE = "Admin";</script>
 </head>
 <body>
     <div id="wrapper" class="d-flex">
@@ -23,6 +24,22 @@
                 <li class="nav-item">
                     <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "MenuList" ? "active" : "")" asp-controller="Admin" asp-action="MenuList">
                         <i class="fas fa-utensils"></i> Menu Items
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Inventory" ? "active" : "")" asp-controller="Admin" asp-action="Inventory">
+                        <i class="fas fa-box text-success"></i> Inventory (Stock)
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Analytics" ? "active" : "")" asp-controller="Admin" asp-action="Analytics">
+                        <i class="fas fa-chart-line text-primary"></i> AI Analytics
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "KDS" ? "active" : "")" asp-controller="Staff" asp-action="KDS">
+                        <i class="fas fa-desktop text-warning"></i> Kitchen (KDS)
                     </a>
                 </li>
                 <li class="nav-item">
@@ -41,13 +58,19 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "OutletList" ? "active" : "")" asp-controller="Admin" asp-action="OutletList">
+                        <i class="fas fa-store text-info"></i> Manage Outlets
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "UserList" ? "active" : "")" asp-controller="Admin" asp-action="UserList">
                         <i class="fas fa-user-friends"></i> Customers
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-warning" asp-controller="Staff" asp-action="Dashboard">
-                        <i class="fas fa-exchange-alt"></i> Staff Panel
+
+                <li class="nav-item text-center mt-3">
+                    <a class="btn btn-sm btn-outline-warning rounded-pill px-3" asp-controller="Staff" asp-action="Dashboard">
+                        <i class="fas fa-exchange-alt me-1"></i> Staff Panel
                     </a>
                 </li>
                 <div class="mt-auto">
@@ -66,6 +89,10 @@
                             <span class="text-white-50 small d-block mb-1" style="line-height: 1;">Logged in as</span>
                             <span class="fw-bold text-white">@Context.Session.GetString("UserName")</span>
                         </div>
+                        <div class="connection-status-pill mx-2 px-3 py-1 rounded-pill bg-dark d-flex align-items-center justify-content-center">
+                            <span id="connection-dot" class="connection-dot disconnected"></span>
+                            <span id="connection-text" class="text-white-50 small ms-2">Offline</span>
+                        </div>
                     </li>
                 </div>
             </ul>
@@ -73,7 +100,7 @@
 
         <div class="main-content w-100">
             @await Html.PartialAsync("_Alert")
-            <header class="admin-header sticky-top d-flex justify-content-between align-items-center mb-4 pb-2">
+            <header class="admin-header sticky-top d-flex justify-content-between align-items-center mb-4 pb-2 px-4 bg-white shadow-sm" style="height: 70px;">
                 <div class="d-flex align-items-center">
                     <button id="sidebar-toggle" class="btn btn-sm border-0 p-0 d-md-none me-3" type="button">
                         <div class="hamburger-icon">
@@ -82,11 +109,40 @@
                             <span></span>
                         </div>
                     </button>
-                    <h3 class="mb-0 fw-bold"></h3>
+                    <h4 class="mb-0 fw-bold text-coffee">@ViewData["Title"]</h4>
+                </div>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <!-- 🛰️ Notification Bell -->
+                    <div class="dropdown">
+                        <button class="btn btn-light rounded-circle shadow-sm position-relative p-2" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" onclick="markAsRead()">
+                            <i class="fas fa-bell fs-5 text-secondary"></i>
+                            <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.6rem;">
+                                0
+                            </span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-0 mt-2" aria-labelledby="notifDropdown" style="width: 320px; max-height: 400px; overflow-y: auto;">
+                            <div class="p-3 border-bottom bg-light rounded-top-4">
+                                <h6 class="mb-0 fw-bold">Notifications</h6>
+                            </div>
+                            <div id="notif-list">
+                                <div class="p-4 text-center text-muted small">Loading...</div>
+                            </div>
+                            <div class="p-2 border-top text-center bg-light rounded-bottom-4">
+                                <a href="#" class="text-decoration-none small text-coffee fw-bold">View All</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-none d-md-block">
+                        <span class="text-muted small">@DateTime.Now.ToString("dd MMM, yyyy")</span>
+                    </div>
                 </div>
             </header>
 
-            @RenderBody()
+            <div class="px-4">
+                @RenderBody()
+            </div>
         </div>
     </div>
 
@@ -94,7 +150,54 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script src="/js/site.js?v=@DateTime.Now.Ticks"></script>
+    
+    <script>
+        function fetchNotifications() {
+            $.get('/Admin/GetNotifications', function(data) {
+                const badge = $('#notif-badge');
+                if (data.unreadCount > 0) {
+                    badge.text(data.unreadCount).removeClass('d-none');
+                } else {
+                    badge.addClass('d-none');
+                }
+
+                const list = $('#notif-list');
+                list.empty();
+                if (data.notifications.length === 0) {
+                    list.append('<div class="p-4 text-center text-muted small">No notifications</div>');
+                } else {
+                    data.notifications.forEach(n => {
+                        const iconClass = n.type === 'Warning' ? 'text-warning' : 'text-info';
+                        const item = `
+                            <a href="${n.targetUrl || '#'}" class="dropdown-item p-3 border-bottom d-flex align-items-start gap-3 ${n.isRead ? '' : 'bg-light'}">
+                                <i class="fas fa-circle ${iconClass} mt-1" style="font-size: 0.6rem;"></i>
+                                <div>
+                                    <div class="fw-bold small text-dark">${n.title}</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">${n.message}</div>
+                                </div>
+                            </a>
+                        `;
+                        list.append(item);
+                    });
+                }
+            });
+        }
+
+        function markAsRead() {
+            $.post('/Admin/MarkNotificationsAsRead', function() {
+                setTimeout(fetchNotifications, 1000);
+            });
+        }
+
+        $(document).ready(function() {
+            fetchNotifications();
+            // Re-fetch every 30 seconds
+            setInterval(fetchNotifications, 30000);
+        });
+    </script>
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

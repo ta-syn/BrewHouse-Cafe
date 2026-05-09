@@ -21,10 +21,8 @@ function updateCartCount() {
         .catch(() => {});
 }
 
-// Add item to cart
 // Add item to cart with instant feedback
 function addToCart(itemId) {
-    // Show a small loading effect on the button if possible
     const btn = event?.currentTarget;
     if (btn) btn.classList.add('opacity-50');
 
@@ -40,13 +38,10 @@ function addToCart(itemId) {
                 [badge, badgeMobile].forEach(el => {
                     if (el.length) {
                         el.text(data.cartCount).removeClass('d-none');
-                        
-                        // Instant animation trigger
                         el.removeClass('animate__animated animate__bounceIn');
                         void el[0].offsetWidth; // force reflow
                         el.addClass('animate__animated animate__bounceIn');
                         
-                        // Animate cart icon
                         const icon = el.parent().find('.fa-shopping-cart');
                         icon.removeClass('animate__animated animate__rubberBand');
                         void icon[0].offsetWidth;
@@ -81,7 +76,7 @@ function confirmDelete(message) {
     });
 }
 
-// Toast notification (fallback)
+// Toast notification
 function showToast(message, type = 'success') {
     Swal.fire({
         icon: type === 'danger' ? 'error' : type,
@@ -100,7 +95,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.querySelector('.sidebar');
     
     if (toggleBtn && sidebar) {
-        // Create backdrop element if it doesn't exist
         let backdrop = document.querySelector('.sidebar-backdrop');
         if (!backdrop) {
             backdrop = document.createElement('div');
@@ -113,8 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
             sidebar.classList.toggle('open');
             backdrop.classList.toggle('show');
             document.body.classList.toggle('sidebar-open');
-            
-            // Animate hamburger icon if present
             const icon = toggleBtn.querySelector('.hamburger-icon');
             if (icon) icon.classList.toggle('active');
         });
@@ -123,12 +115,10 @@ document.addEventListener('DOMContentLoaded', function() {
             sidebar.classList.remove('open');
             backdrop.classList.remove('show');
             document.body.classList.remove('sidebar-open');
-            
             const icon = toggleBtn.querySelector('.hamburger-icon');
             if (icon) icon.classList.remove('active');
         });
 
-        // Close sidebar on link click (mobile)
         const navLinks = sidebar.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
@@ -136,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     sidebar.classList.remove('open');
                     backdrop.classList.remove('show');
                     document.body.classList.remove('sidebar-open');
-                    
                     const icon = toggleBtn.querySelector('.hamburger-icon');
                     if (icon) icon.classList.remove('active');
                 }
@@ -158,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Update cart count on load
     if (document.getElementById('cart-count')) updateCartCount();
 
     // Auto-init tooltips
@@ -191,11 +179,122 @@ function showAlreadyMemberMsg() {
         icon: 'info',
         confirmButtonColor: '#2C1810',
         confirmButtonText: 'Great!',
-        showClass: {
-            popup: 'animate__animated animate__fadeInDown'
-        },
-        hideClass: {
-            popup: 'animate__animated animate__fadeOutUp'
-        }
+        showClass: { popup: 'animate__animated animate__fadeInDown' },
+        hideClass: { popup: 'animate__animated animate__fadeOutUp' }
     });
 }
+
+// 🛰️ SIGNALR: REAL-TIME NOTIFICATIONS
+const orderConnection = new signalR.HubConnectionBuilder()
+    .withUrl("/orderHub")
+    .withAutomaticReconnect()
+    .build();
+
+// Audio for notifications
+const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+const readyBell = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+let soundEnabled = false;
+
+document.addEventListener('click', () => {
+    if (!soundEnabled) {
+        // Initialize both sounds
+        [notificationSound, readyBell].forEach(s => {
+            s.play().then(() => {
+                s.pause();
+                s.currentTime = 0;
+            }).catch(() => {});
+        });
+        soundEnabled = true;
+        console.log("🔊 Premium Audio System Online");
+    }
+}, { once: true });
+
+orderConnection.on("ReceiveOrderNotification", (data) => {
+    if (soundEnabled) notificationSound.play().catch(e => console.log("Sound play blocked: ", e));
+
+    Swal.fire({
+        title: '☕ New Order Received!',
+        html: `<b>Order #${data.orderId}</b> from ${data.customerName}<br/>Table: ${data.table}<br/>Amount: ৳${data.amount}`,
+        icon: 'success',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: true,
+        confirmButtonText: 'View',
+        timer: 10000,
+        timerProgressBar: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const controller = (window.USER_ROLE === "Admin") ? "Admin" : "Staff";
+            window.location.href = `/${controller}/OrderDetail/${data.orderId}`;
+        }
+    });
+
+    const path = window.location.pathname;
+    if (path.includes("ActiveOrders") || path.includes("KDS") || path.includes("Dashboard") || path.includes("AllOrders")) {
+        setTimeout(() => location.reload(), 2000);
+    }
+});
+
+orderConnection.on("UpdateOrderStatus", (data) => {
+    // Play bell if ready
+    if (data.status === "Ready" && soundEnabled) {
+        readyBell.play().catch(() => {});
+    }
+
+    Swal.fire({
+        title: `Order #${data.orderId} Updated`,
+        text: `Status changed to: ${data.status}`,
+        icon: data.status === "Ready" ? 'success' : 'info',
+        toast: true,
+        position: 'bottom-end',
+        timer: 5000
+    });
+    
+    if (window.location.pathname.includes(data.orderId)) {
+        setTimeout(() => location.reload(), 1000);
+    }
+});
+
+// Real-time Table Updates
+orderConnection.on("ReceiveTableUpdate", (data) => {
+    showToast(`Table ${data.tableNumber} is now ${data.status}`, 'info');
+    
+    // Refresh table pages
+    if (window.location.pathname.includes("TableOverview") || window.location.pathname.includes("TableList") || window.location.pathname.includes("WalkInOrder")) {
+        setTimeout(() => location.reload(), 1500);
+    }
+});
+
+function updateConnectionStatus(status) {
+    const dot = document.getElementById('connection-dot');
+    const text = document.getElementById('connection-text');
+    if (!dot || !text) return;
+
+    if (status === "Connected") {
+        dot.className = "connection-dot connected";
+        text.innerText = "Live";
+    } else if (status === "Reconnecting") {
+        dot.className = "connection-dot reconnecting";
+        text.innerText = "Reconnecting...";
+    } else {
+        dot.className = "connection-dot disconnected";
+        text.innerText = "Offline";
+    }
+}
+
+orderConnection.onreconnecting(() => updateConnectionStatus("Reconnecting"));
+orderConnection.onreconnected(() => updateConnectionStatus("Connected"));
+orderConnection.onclose(() => updateConnectionStatus("Disconnected"));
+
+orderConnection.start().then(() => {
+    updateConnectionStatus("Connected");
+    if (window.USER_ROLE) {
+        orderConnection.invoke("JoinGroup", window.USER_ROLE).catch(err => console.error(err));
+    }
+    if (window.CURRENT_ORDER_ID) {
+        orderConnection.invoke("JoinGroup", `Order_${window.CURRENT_ORDER_ID}`).catch(err => console.error(err));
+    }
+}).catch(err => {
+    console.error(err);
+    updateConnectionStatus("Disconnected");
+});

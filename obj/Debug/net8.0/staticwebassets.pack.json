@@ -25,6 +25,10 @@
       "PackagePath": "staticwebassets/images/landing/cta_bg.png"
     },
     {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/2e8bf889-834b-4846-8974-0264ee4beae0.jpg",
+      "PackagePath": "staticwebassets/images/menu/2e8bf889-834b-4846-8974-0264ee4beae0.jpg"
+    },
+    {
       "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/beverages/Caramel Macchiato.png",
       "PackagePath": "staticwebassets/images/menu/beverages/Caramel Macchiato.png"
     },
@@ -39,6 +43,10 @@
     {
       "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/beverages/Matcha Latte.png",
       "PackagePath": "staticwebassets/images/menu/beverages/Matcha Latte.png"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/d4ff13fb-2d59-4c79-965b-74990c709f30.jpeg",
+      "PackagePath": "staticwebassets/images/menu/d4ff13fb-2d59-4c79-965b-74990c709f30.jpeg"
     },
     {
       "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/images/menu/desserts/Blueberry Cheesecake.png",
@@ -335,6 +343,14 @@
     {
       "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/lib/jquery/dist/jquery.min.map",
       "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.map"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/manifest.json",
+      "PackagePath": "staticwebassets/manifest.json"
+    },
+    {
+      "Id": "/Users/nishan/Downloads/CafeManagement/wwwroot/sw.js",
+      "PackagePath": "staticwebassets/sw.js"
     },
     {
       "Id": "obj/Debug/net8.0/staticwebassets/msbuild.CafeManagement.Microsoft.AspNetCore.StaticWebAssets.props",

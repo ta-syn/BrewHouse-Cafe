@@ -22,12 +22,20 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQWRkSXRlbS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/nishan/Downloads/CafeManagement/Views/Admin/AddOutlet.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQWRkT3V0bGV0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/nishan/Downloads/CafeManagement/Views/Admin/AddStaff.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQWRkU3RhZmYuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/nishan/Downloads/CafeManagement/Views/Admin/AllOrders.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQWxsT3JkZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/nishan/Downloads/CafeManagement/Views/Admin/Analytics.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQW5hbHl0aWNzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/nishan/Downloads/CafeManagement/Views/Admin/Dashboard.cshtml]
@@ -38,12 +46,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vRWRpdEl0ZW0uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/nishan/Downloads/CafeManagement/Views/Admin/Inventory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vSW52ZW50b3J5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/nishan/Downloads/CafeManagement/Views/Admin/ManageRecipe.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vTWFuYWdlUmVjaXBlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/nishan/Downloads/CafeManagement/Views/Admin/MenuList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vTWVudUxpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/nishan/Downloads/CafeManagement/Views/Admin/OrderDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vT3JkZXJEZXRhaWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/nishan/Downloads/CafeManagement/Views/Admin/OutletList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vT3V0bGV0TGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/nishan/Downloads/CafeManagement/Views/Admin/StaffList.cshtml]
@@ -110,6 +130,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Ob3RGb3VuZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/nishan/Downloads/CafeManagement/Views/Payment/Gateway.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUGF5bWVudC9HYXRld2F5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/nishan/Downloads/CafeManagement/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -140,6 +164,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/Users/nishan/Downloads/CafeManagement/Views/Staff/Dashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU3RhZmYvRGFzaGJvYXJkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/nishan/Downloads/CafeManagement/Views/Staff/KDS.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU3RhZmYvS0RTLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/nishan/Downloads/CafeManagement/Views/Staff/OrderDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU3RhZmYvT3JkZXJEZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/nishan/Downloads/CafeManagement/Views/Staff/TableOverview.cshtml]

@@ -9,6 +9,8 @@ namespace CafeManagement.Models
         [Required][EmailAddress][MaxLength(200)] public string Email { get; set; } = string.Empty;
         [Required] public string Password { get; set; } = string.Empty;
         public UserRole Role { get; set; } = UserRole.Customer;
+        public bool IsEmailVerified { get; set; } = false;
+        public string? EmailVerificationToken { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public ICollection<Order> Orders { get; set; } = new List<Order>();
     }

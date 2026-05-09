@@ -8,7 +8,11 @@ namespace CafeManagement.Services
 {
     public class AuthService {
         private readonly CafeDbContext _context;
-        public AuthService(CafeDbContext context) { _context = context; }
+        private readonly EmailService _emailService;
+        public AuthService(CafeDbContext context, EmailService emailService) { 
+            _context = context; 
+            _emailService = emailService;
+        }
 
         public async Task<User?> LoginAsync(string identifier, string password) {
             // ═══ OOP CONCEPT: EXCEPTION HANDLING ═══
@@ -19,6 +23,13 @@ namespace CafeManagement.Services
                                               u.Name.ToLower() == identifier.ToLower());
                 if (user == null) return null;
                 bool valid = BCrypt.Net.BCrypt.Verify(password, user.Password);
+                
+                if (valid) {
+                    // Send login notification
+                    await _emailService.SendEmailAsync(user.Email, "Login Notification - BrewHouse Cafe", 
+                        $"<h3>Hello {user.Name},</h3><p>You have just logged into your BrewHouse Cafe account.</p><p>If this wasn't you, please change your password immediately.</p>");
+                }
+                
                 return valid ? user : null;
             } catch (Exception ex) {
                 Console.WriteLine($"[{DateTime.Now}] LoginAsync Error: {ex.Message}");
@@ -38,10 +49,18 @@ namespace CafeManagement.Services
                     Email = email,
                     Password = BCrypt.Net.BCrypt.HashPassword(password),
                     Role = UserRole.Customer,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    IsEmailVerified = false,
+                    EmailVerificationToken = Guid.NewGuid().ToString()
                 };
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
+
+                // Send verification email
+                var verificationLink = $"http://localhost:5129/Auth/VerifyEmail?token={user.EmailVerificationToken}";
+                await _emailService.SendEmailAsync(user.Email, "Verify Your Email - BrewHouse Cafe", 
+                    $"<h3>Welcome to BrewHouse Cafe!</h3><p>Please click the link below to verify your email address:</p><a href='{verificationLink}'>Verify Email</a>");
+
                 return true;
             } catch (DuplicateEmailException) {
                 throw;
@@ -95,6 +114,14 @@ namespace CafeManagement.Services
                 Console.WriteLine($"[{DateTime.Now}] DeleteUser Error: {ex.Message}");
                 throw;
             }
+        }
+        public async Task<bool> VerifyEmailAsync(string token) {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
+            if (user == null) return false;
+            user.IsEmailVerified = true;
+            user.EmailVerificationToken = null;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

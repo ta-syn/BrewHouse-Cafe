@@ -1,0 +1,123 @@
+@model CafeManagement.Models.Order
+@{
+    Layout = null;
+    string method = ViewBag.Method;
+    decimal displayAmount = ViewBag.SplitTotal ?? Model.TotalAmount;
+    string brandColor = method == "bKash" ? "#e2136e" : (method == "Nagad" ? "#f6921e" : "#00457C");
+    string logo = method == "bKash" ? "https://www.logo.wine/a/logo/BKash/BKash-Logo.wine.svg" : (method == "Nagad" ? "https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" : "https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg");
+    string itemIds = ViewBag.ItemIds ?? "";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Gateway - @method</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Inter', sans-serif; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .payment-card { width: 400px; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: none; }
+        .gateway-header { background-color: @brandColor; padding: 30px; text-align: center; }
+        .gateway-header img { height: 60px; filter: brightness(0) invert(1); }
+        .order-info { background: #fff; padding: 20px; border-bottom: 1px dashed #eee; }
+        .btn-pay { background-color: @brandColor; color: white; border: none; font-weight: bold; padding: 15px; border-radius: 50px; width: 100%; margin-top: 20px; transition: all 0.3s; }
+        .btn-pay:hover { opacity: 0.9; transform: scale(1.02); color: white; }
+        .loader-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 10; }
+        .spinner { width: 50px; height: 50px; border: 5px solid @brandColor; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+        @@keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="card payment-card position-relative">
+        <div class="loader-overlay" id="loader">
+            <div class="spinner"></div>
+            <p class="mt-3 fw-bold text-muted">Processing Payment...</p>
+        </div>
+
+        <div class="gateway-header">
+            <img src="@logo" alt="@method">
+        </div>
+
+        <div class="order-info text-center">
+            <h6 class="text-muted small text-uppercase mb-1">@(string.IsNullOrEmpty(itemIds) ? "Full Payment" : "Split Payment") for Order #@Model.Id</h6>
+            <h2 class="fw-bold mb-0">৳@displayAmount</h2>
+            <div class="mt-2 small text-muted">BrewHouse Cafe Automation</div>
+        </div>
+
+        <div class="card-body p-4">
+            <div id="step1">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Your @method Account Number</label>
+                    <input type="text" id="accNum" class="form-control form-control-lg rounded-pill px-4" placeholder="01XXXXXXXXX" maxlength="11">
+                </div>
+                <div class="form-check small mb-4">
+                    <input class="form-check-input" type="checkbox" id="terms" checked>
+                    <label class="form-check-label text-muted" for="terms">
+                        I agree to the terms and conditions.
+                    </label>
+                </div>
+                <button class="btn-pay" onclick="showOtp()">PROCEED</button>
+                <div class="text-center mt-3">
+                    <a href="javascript:history.back()" class="text-muted small text-decoration-none">CLOSE GATEWAY</a>
+                </div>
+            </div>
+
+            <div id="step2" style="display: none;">
+                <div class="text-center mb-4">
+                    <p class="small text-muted">An OTP has been sent to your @method number. Please enter it below.</p>
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <input type="text" class="form-control text-center fw-bold" style="width: 50px; height: 50px; font-size: 1.5rem;" maxlength="1">
+                        <input type="text" class="form-control text-center fw-bold" style="width: 50px; height: 50px; font-size: 1.5rem;" maxlength="1">
+                        <input type="text" class="form-control text-center fw-bold" style="width: 50px; height: 50px; font-size: 1.5rem;" maxlength="1">
+                        <input type="text" class="form-control text-center fw-bold" style="width: 50px; height: 50px; font-size: 1.5rem;" maxlength="1">
+                    </div>
+                </div>
+                <button class="btn-pay" onclick="finalizePayment()">CONFIRM OTP</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function showOtp() {
+            const acc = $('#accNum').val();
+            if (acc.length < 11) {
+                alert("Please enter a valid 11-digit account number.");
+                return;
+            }
+            $('#loader').css('display', 'flex');
+            setTimeout(() => {
+                $('#loader').hide();
+                $('#step1').hide();
+                $('#step2').fadeIn();
+            }, 1500);
+        }
+
+        function finalizePayment() {
+            $('#loader').css('display', 'flex');
+            $.post('/Payment/ProcessMockPayment', {
+                orderId: @Model.Id,
+                method: '@method',
+                accountNumber: $('#accNum').val(),
+                itemIds: '@itemIds'
+            }, function(res) {
+                if (res.success) {
+                    setTimeout(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Payment Successful!',
+                            text: 'Transaction ID: ' + res.trxId,
+                            confirmButtonColor: '@brandColor'
+                        }).then(() => {
+                            window.location.href = '/Customer/OrderConfirmation/@Model.Id';
+                        });
+                    }, 1000);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
