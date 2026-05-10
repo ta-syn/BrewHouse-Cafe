@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="wwwroot/images/github/banner.png" alt="BrewHouse Cafe Banner" width="100%">
-</p>
-
 <h1 align="center">☕ BrewHouse Cafe Management System</h1>
 <p align="center"><b>An Enterprise-Grade, High-Performance SaaS Solution for Modern Cafes</b></p>
 
@@ -59,45 +55,19 @@
 
 ---
 
-## 📦 Installation & Setup
-
-### Prerequisites
-- **SDK:** .NET 8.0 SDK
-- **Database:** SQL Server (Express or LocalDB)
-- **Tools:** Visual Studio 2022 or VS Code
-
-### Quick Start
-1. **Clone & Navigate:**
-   ```bash
-   git clone https://github.com/ta-syn/BrewHouse-Cafe-.git
-   cd BrewHouse-Cafe-
-   ```
-2. **Environment Configuration:**
-   Create a `.env` file in the root directory:
-   ```env
-   ADMIN_EMAIL=admin@cafe.com
-   ADMIN_PASSWORD=your_secure_password
-   ```
-3. **Database Migration:**
-   ```bash
-   dotnet ef database update
-   ```
-4. **Launch Application:**
-   ```bash
-   dotnet run
-   ```
-   Access the dashboard at: `http://localhost:5100`
-
----
-
 ## 🛡️ Intellectual Property & Licensing
 
-> [!IMPORTANT]
+> [!CAUTION]
 > **Copyright © 2026 BrewHouse Cafe Management. All rights reserved.**
 > 
-> This project is a proprietary professional portfolio. Unauthorized copying, modification, or distribution of this codebase is strictly prohibited. If you are using this code for educational purposes or as a reference, please ensure proper attribution is provided.
+> This repository is for **Showcase and Archival purposes only**. 
+> - **Unauthorized Cloning:** Prohibited.
+> - **Code Replication:** Prohibited.
+> - **Commercial Use:** Prohibited.
 > 
-> **License:** Strictly Private / Proprietary.
+> This codebase represents proprietary intellectual property. No license is granted for public redistribution or modification.
+> 
+> **License:** Private / Proprietary.
 
 ---
 
