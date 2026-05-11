@@ -1,0 +1,7 @@
+# Set behavior for files
+
+# Exclude 3rd party libraries and vendored files from language statistics
+wwwroot/lib/** linguist-vendored
+
+# Map Razor pages to C# to prioritize C# in GitHub's language stats (instead of HTML)
+*.cshtml linguist-language=C#
